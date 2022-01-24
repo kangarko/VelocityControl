@@ -1,8 +1,0 @@
-<?xml version="1.0" ?>
-<project name="BungeeControl-Red" default="Build">
-    <target name="Build">
-        <jar jarfile="/Users/kangarko/Test Servers/BungeeCord/plugins/${ant.project.name}.jar" basedir="./target/classes/" includes="**/*">
-            <fileset dir="../BungeeFoundation/target/classes"/>
-        </jar>
-    </target>
-</project>

@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.mineacademy.bfo.Common;
 import org.mineacademy.bfo.Valid;
 import org.mineacademy.bfo.bungee.BungeeAction;
 import org.mineacademy.velocitycontrol.VelocityControl;

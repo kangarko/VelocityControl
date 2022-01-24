@@ -5,7 +5,6 @@ import com.google.common.io.ByteStreams;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import org.mineacademy.bfo.CompressUtil;
 import org.mineacademy.bfo.Valid;
 import org.mineacademy.bfo.collection.SerializedMap;
 import org.mineacademy.velocitycontrol.VelocityControl;

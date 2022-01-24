@@ -1,8 +1,6 @@
 package org.mineacademy.velocitycontrol.settings;
 
-import com.google.common.io.Resources;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.proxy.server.ServerInfo;
 import lombok.Getter;
 import org.mineacademy.bfo.collection.StrictMap;
 import org.mineacademy.bfo.model.IsInList;
@@ -14,12 +12,9 @@ import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 

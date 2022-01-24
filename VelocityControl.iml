@@ -3,10 +3,13 @@
   <component name="FacetManager">
     <facet type="minecraft" name="Minecraft">
       <configuration>
+        <userChosenTypes>
+          <map>
+            <entry key="VELOCITY" value="true" />
+          </map>
+        </userChosenTypes>
         <autoDetectTypes>
           <platformType>VELOCITY</platformType>
-          <platformType>ADVENTURE</platformType>
-          <platformType>BUNGEECORD</platformType>
         </autoDetectTypes>
       </configuration>
     </facet>
