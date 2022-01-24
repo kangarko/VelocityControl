@@ -1,0 +1,7 @@
+name: ${project.artifactId}
+main: ${main.class}
+version: ${project.version}
+author: kangarko
+softDepends: [RedisBungee]
+libraries:
+  - org.openjdk.nashorn:nashorn-core:15.3

@@ -1,0 +1,130 @@
+# !-----------------------------------------------------------------------------------------------!
+#                       Welcome to the main configuration of BungeeControl
+# !-----------------------------------------------------------------------------------------------!
+#
+#  *IMPORTANT* Ensure you set a unique name for each server in "server.properties" file
+#              in your root server folder. The name must be the same as your server name in
+#              BungeeCord config.yml.
+#
+# !-----------------------------------------------------------------------------------------------!
+
+# -------------------------------------------------------------------------------------------------
+# Server name aliases used when broadcasting messages below
+# You can edit the sections and remove old keys below.
+# Put the server name (see header) as the key, and its alias as the value.
+# -------------------------------------------------------------------------------------------------
+Server_Aliases: 
+  lobby: "hub"
+
+# -------------------------------------------------------------------------------------------------
+# Represents settings for player messages such as join, quit and switch messages
+# -------------------------------------------------------------------------------------------------
+Messages:
+
+  # THIS SECTION IS WORK IN PROGRESS !!
+ 
+  # What aspects of messages should be enabled?
+  # Options: join, quit, switch
+  #
+  # If you have another plugin handling join/quit etc. messages, remove them from list below.
+  # If you want to hide those messages, leave them in Apply_On and empty your messages/ .rs files.
+  Apply_On: []
+  
+  # List of server names (see Server_Aliases) that we ignore from broadcasting
+  Ignored_Servers:
+    - "silent_server"
+  
+  # Files in messages/ folder are read from top to bottom. A true value means that if you have
+  # multiple messages there, we only send the first eligible message to the player (we evaluate
+  # this for each player separatedly). A false value means players will see all messages
+  # that are eligible for them. 
+  Stop_On_First_Match: true
+  
+  # Automatically append prefix to messages of the given type. Edit/remove/add sections below
+  # from Apply_On key above to the left, and prefix to the right.
+  # The message types that you do not specify below, will have no prefix unless specified
+  # individually. You can also disable prefix for some messages by writing "prefix none" there.
+  #
+  # Example:
+  # Prefix:
+  #   join: "&8[&2+&8] &7"
+  #   quit: "&8[&4-&8] &7"
+  #   kick: "&8[&4-&8] &7"
+  #   death: "&8[&4x&8] &7"
+  #   timed: "{announce_prefix}"
+  Prefix: {}
+  
+  # If you want to display join message after other plugins, you can send it
+  # a bit later such as 1 tick later than the other messages. 
+  # **YOU CANNOT OVERRIDE THIS WITH THE "DELAY" OPERATOR**
+  Defer_Join_Message_By: 1
+
+# -------------------------------------------------------------------------------------------------
+# Intercepting bungeecord tab commands section - ONLY filters BungeeCord commands, to filter
+# Spigot commands, configure ChatControl on your Spigot server(s).
+# -------------------------------------------------------------------------------------------------
+Tab_Complete:
+
+  # A map of command labels and their arguments to remove. Put arguments to ["*"] to remove all.
+  # Example: This will remove the "survival" tab completion when trying to tab complete /server.
+  #
+  # Filter_Arguments:
+  #   server: [survival]
+  #
+  Filter_Arguments: {}
+
+# -------------------------------------------------------------------------------------------------
+# Chat relay is used for servers that do not have ChatControl installed to forward chat.
+# [WARNING] This only forwards chat, no filtering is applied for these servers.
+# -------------------------------------------------------------------------------------------------
+Chat_Forwarding: 
+  
+  # Enable this feature?
+  Enabled: false
+
+  # List of what servers do not have ChatControl and need chat forwarded to them?
+  To_Servers:
+    - "minigame1"
+
+  # List of what servers do not have ChatControl and need chat forwarded from them?
+  From_Servers:
+    - "minigame1"
+
+# -------------------------------------------------------------------------------------------------
+# Enable clusters to group your servers into clusters, which limits data transmitted only within
+# the same cluster group. Example: You can limit tab-completion to only players on lobbies, etc.
+# -------------------------------------------------------------------------------------------------
+Clusters:
+
+  # Enable this feature?
+  Enabled: false
+
+  # The map of clusters with a list of servers they belong to.
+  # Servers not in the list will be placed into a "global" cluster automatically and share data.
+  #
+  # Example:
+  # List:
+  #   gameplay:
+  #   - factions
+  #   - pvp
+  #   lobbies:
+  #   - hub1
+  #   - hub2
+  List: {}
+
+# -------------------------------------------------------------------------------------------------
+# List of section names that will print informative messages about their features.
+# You normally don't need to edit this unless you have problems or been navigated by the dev.
+#
+# By default we show important messages about our packets being sent and received. This helps you
+# understand how plugin works (or not works) and solve bugs.
+#
+# DO NOT disable this unless you have been using BungeeControl Red for a few weeks otherwise you
+# will miss out and then waste time reading our Wiki and opening tickets where things could easily
+# be explained simply by reading the console.
+# -------------------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------------------
+# Do not change this value, otherwise it will corrupt your plugin installation!
+# -------------------------------------------------------------------------------------------------
