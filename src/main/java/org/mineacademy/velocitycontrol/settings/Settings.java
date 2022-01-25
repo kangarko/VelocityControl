@@ -38,9 +38,14 @@ public final class Settings {
 	public static void load() {
 		try {
 			File file = new File(VelocityControl.getFolder().toFile(), "settings.yml");
+			if(!VelocityControl.getFolder().toFile().exists()) {
+				VelocityControl.getFolder().toFile().mkdirs();
+			}
 			if (!file.exists()) {
 				try (InputStream in = Settings.class.getResourceAsStream("/settings.yml")) {
 					Files.copy(in, file.toPath());
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			try (Reader reader = new FileReader(file)) {
@@ -59,6 +64,7 @@ public final class Settings {
 	public static class SettingsFile {
 		public Messages Messages;
 		public Clusters Clusters;
+		public TabComplete Tab_Complete;
 		public ChatForwarding Chat_Forwarding;
 		public Map<String, String> Server_Aliases;
 	}
@@ -80,7 +86,7 @@ public final class Settings {
 	 */
 	public static class TabComplete {
 
-		public static StrictMap<String, IsInList<String>> FILTER_ARGUMENTS;
+		public static StrictMap<String, IsInList<String>> Filter_Arguments;
 	}
 
 	/**

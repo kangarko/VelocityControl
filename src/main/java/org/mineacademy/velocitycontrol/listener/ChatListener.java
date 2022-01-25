@@ -30,7 +30,7 @@ public final class ChatListener {
 		final String label = event.getPartialMessage().trim().substring(1);
 		final List<String> args = event.getSuggestions();
 
-		final IsInList<String> filterArgs = Settings.TabComplete.FILTER_ARGUMENTS.get(label);
+		final IsInList<String> filterArgs = Settings.TabComplete.Filter_Arguments.get(label);
 
 		if (filterArgs != null)
 			for (final Iterator<String> it = args.iterator(); it.hasNext();) {
