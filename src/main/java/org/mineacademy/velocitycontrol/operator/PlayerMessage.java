@@ -10,6 +10,7 @@ import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
@@ -410,7 +411,6 @@ public abstract class PlayerMessage extends Operator implements Rule {
 
 			// Delay
 			if (message.getDelay() != null) {
-				VelocityControl.getLogger().error("1");
 				final SimpleTime time = message.getDelay().getKey();
 				final long now = System.currentTimeMillis();
 
@@ -618,8 +618,8 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			// Use the same message for all players
 			String replaceVariables = replaceVariables(this.pickedMessage, operator).replace("{player}", player.getUsername());
 
-			TextComponent prefix = LegacyComponentSerializer.legacyAmpersand().deserialize(operator.getPrefix());
-			TextComponent suffix = LegacyComponentSerializer.legacyAmpersand().deserialize(Common.getOrEmpty(operator.getSuffix()));
+			TextComponent prefix = operator.getPrefix() != null ? LegacyComponentSerializer.legacyAmpersand().deserialize(operator.getPrefix()) : Component.text("");
+			TextComponent suffix = operator.getSuffix() != null ? LegacyComponentSerializer.legacyAmpersand().deserialize(Common.getOrEmpty(operator.getSuffix())) : Component.text("");
 			TextComponent message = LegacyComponentSerializer.legacyAmpersand().deserialize(replaceVariables);
 			TextComponent replaced = prefix.append(message).append(suffix);
 

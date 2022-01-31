@@ -408,7 +408,7 @@ public abstract class Operator implements Rule {
 			this.sender = sender;
 
 			this.isPlayer = sender instanceof Player;
-			this.player = isPlayer ? (Player) sender : null;
+			this.player = isPlayer ? sender : null;
 		}
 
 		public final void start() {

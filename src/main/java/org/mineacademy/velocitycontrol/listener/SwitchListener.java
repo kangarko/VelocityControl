@@ -50,9 +50,7 @@ public final class SwitchListener {
 	 */
 	@Subscribe(order = PostOrder.LATE)
 	public void onConnect(ServerConnectedEvent event) {
-
 		final Player player = event.getPlayer();
-		final String playerName = player.getUsername();
 
 		if (!this.players.containsKey(player.getUniqueId()) && !isSilent(event.getServer().getServerInfo())) {
 			final String toServer = Settings.getServerNameAlias(event.getServer());
@@ -69,9 +67,8 @@ public final class SwitchListener {
 	 *
 	 * @param event
 	 */
-	@Subscribe(order = PostOrder.LATE)
+	@Subscribe(order = PostOrder.LAST)
 	public void onSwitch(ServerConnectedEvent event) {
-		if (!event.getPreviousServer().isPresent()) return;
 		final Player player = event.getPlayer();
 		final RegisteredServer currentServer = event.getServer();
 		final RegisteredServer lastServer = this.players.put(player.getUniqueId(), currentServer);
@@ -87,7 +84,7 @@ public final class SwitchListener {
 		}
 	}
 
-	@Subscribe(order = PostOrder.LATE)
+	@Subscribe(order = PostOrder.LAST)
 	public void onDisconnect(DisconnectEvent event) {
 		final Player player = event.getPlayer();
 		final String playerName = event.getPlayer().getUsername();
@@ -100,11 +97,11 @@ public final class SwitchListener {
 			allPlayers.removeAll(fromPlayers);
 
 			final String fromServer = Settings.getServerNameAlias(server);
-
 			final SyncedCache synced = SyncedCache.fromName(playerName);
 
-			if (synced != null && !synced.isVanished() && !isSilent(fromServer))
+			if (synced != null && !synced.isVanished() && !isSilent(fromServer)) {
 				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, SerializedMap.of("server", fromServer));
+			}
 
 		}
 	}

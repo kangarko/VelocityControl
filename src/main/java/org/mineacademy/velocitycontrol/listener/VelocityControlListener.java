@@ -134,10 +134,12 @@ public final class VelocityControlListener {
 
         final ProxyPacket packet = message.getAction();
 
-        if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER)
-            VelocityControl.getLogger().debug("Incoming packet " + packet + " from " + serverName);
 
-        if (packet == ProxyPacket.PLAYERS_CLUSTER_DATA)
+        if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER) {
+            VelocityControl.getLogger().debug("Incoming packet " + packet + " from " + serverName);
+        }
+
+        if (packet == ProxyPacket.PLAYERS_CLUSTER_DATA) {
             synchronized (this.clusteredData) {
                 final SyncType syncType = SyncType.valueOf(message.readString());
                 final SerializedMap dataMap = message.readMap();
@@ -147,15 +149,15 @@ public final class VelocityControlListener {
 
                 this.clusteredData.override(syncType, oldData);
             }
-
-        else if (packet == ProxyPacket.FORWARD_COMMAND) {
+        } else if (packet == ProxyPacket.FORWARD_COMMAND) {
             final String server = message.readString();
             final String command = message.readString().replace("{server_name}", serverName);
 
             if ("bungee".equals(server)) {
                 VelocityControl.getServer().getCommandManager().executeAsync(VelocityControl.getServer().getConsoleCommandSource(), command);
-            } else
+            } else {
                 forwardData(data, false);
+            }
         } else if (packet == ProxyPacket.CONFIRM_PLAYER_READY) {
             final UUID uniqueId = message.readUUID();
             final String syncedCacheLine = message.readString();
@@ -164,8 +166,9 @@ public final class VelocityControlListener {
             if (player.isPresent()) {
                 SyncedCache.uploadSingle(player.get().getUsername(), uniqueId, syncedCacheLine);
                 SwitchListener.broadcastPendingMessage(player.get());
-            } else
-                forwardData(data, packet == ProxyPacket.DB_UPDATE);
+            }
+        } else {
+            forwardData(data, packet == ProxyPacket.DB_UPDATE);
         }
     }
 

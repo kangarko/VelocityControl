@@ -78,28 +78,6 @@ public final class IncomingMessage extends Message {
         connection.sendPluginMessage(this.getChannel(), this.data);
     }
 
-    public void forwardToOthers() {
-        Iterator var1 = VelocityControl.getServers().iterator();
-
-        while (var1.hasNext()) {
-            RegisteredServer server = (RegisteredServer) var1.next();
-            if (!server.getServerInfo().getName().equals(this.getServerName())) {
-                this.forward(server);
-            }
-        }
-
-    }
-
-    public void forwardToAll() {
-        Iterator var1 = VelocityControl.getServers().iterator();
-
-        while (var1.hasNext()) {
-            RegisteredServer server = (RegisteredServer) var1.next();
-            this.forward(server);
-        }
-
-    }
-
     public void forward(RegisteredServer server) {
         VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), () -> dispatchMessage(server)).schedule();
     }
