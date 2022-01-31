@@ -86,7 +86,7 @@ public final class Settings {
 	 */
 	public static class TabComplete {
 
-		public static StrictMap<String, IsInList<String>> Filter_Arguments;
+		public StrictMap<String, IsInList<String>> Filter_Arguments;
 	}
 
 	/**
