@@ -66,7 +66,6 @@ public final class VelocityControl {
 	}
 
 	public void onPluginStart() {
-
 		Settings.load();
 		velocityControl = new VelocityControlListener();
 		server.getChannelRegistrar().register(CHANNEL);
@@ -74,12 +73,12 @@ public final class VelocityControl {
 		server.getEventManager().register(this, new ChatListener());
 		server.getEventManager().register(this, new PlayerListener());
 		server.getEventManager().register(this, velocityControl);
+		this.onReloadablesStart();
 
 	}
 
 	protected void onReloadablesStart() {
 		PlayerMessages.getInstance().load();
-
 		velocityControl.scheduleSyncTask();
 	}
 

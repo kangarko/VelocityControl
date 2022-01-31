@@ -1,18 +1,17 @@
 package org.mineacademy.velocitycontrol;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import com.james090500.CoreFoundation.Valid;
+import com.james090500.CoreFoundation.collection.SerializedMap;
+import com.james090500.CoreFoundation.debug.Debugger;
 import com.velocitypowered.api.proxy.Player;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.collection.SerializedMap;
-import org.mineacademy.velocitycontrol.listener.Debugger;
+import lombok.Getter;
 import org.mineacademy.velocitycontrol.listener.OutgoingMessage;
 import org.mineacademy.velocitycontrol.listener.VelocityControlListener;
 import org.mineacademy.velocitycontrol.model.ChannelMode;
-
-import lombok.Getter;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a cache with data from BungeeCord
@@ -380,7 +379,7 @@ public final class SyncedCache {
 				final SyncedCache cache = cacheMap.get(playerName);
 
 				if (cache != null) {
-					Debugger.debug("bungee-sync", "Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
+					Debugger.print("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
 
 					cache.loadData(dataLine);
 				}

@@ -1,5 +1,7 @@
 package org.mineacademy.velocitycontrol.listener;
 
+import com.james090500.CoreFoundation.Common;
+import com.james090500.CoreFoundation.model.IsInList;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
@@ -7,8 +9,6 @@ import com.velocitypowered.api.event.player.TabCompleteEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.mineacademy.bfo.Common;
-import org.mineacademy.bfo.model.IsInList;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
@@ -30,7 +30,7 @@ public final class ChatListener {
 		final String label = event.getPartialMessage().trim().substring(1);
 		final List<String> args = event.getSuggestions();
 
-		final IsInList<String> filterArgs = Settings.TabComplete.Filter_Arguments.get(label);
+		final IsInList<String> filterArgs = Settings.getSettings().Tab_Complete.Filter_Arguments.get(label);
 
 		if (filterArgs != null)
 			for (final Iterator<String> it = args.iterator(); it.hasNext();) {

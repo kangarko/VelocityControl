@@ -1,8 +1,7 @@
 package org.mineacademy.velocitycontrol.model;
 
+import com.james090500.CoreFoundation.collection.SerializedMap;
 import lombok.Getter;
-import org.mineacademy.bfo.bungee.BungeeAction;
-import org.mineacademy.bfo.collection.SerializedMap;
 
 import java.util.UUID;
 
@@ -14,11 +13,11 @@ import java.util.UUID;
  *
  * 1) The UUID of the sender from which we send the packet, or null
  * 2) The sender server name
- * 3) The {@link BungeeAction}
+ * 3) The {@link ProxyPacket}
  *
  * and the rest is the actual data within this enum
  */
-public enum ProxyPacket implements BungeeAction {
+public enum ProxyPacket {
 
 	/**
 	 * Remove the given message from the players screen if he has received it.

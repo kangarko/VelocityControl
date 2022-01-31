@@ -1,35 +1,28 @@
 package org.mineacademy.velocitycontrol.operator;
 
+import com.james090500.CoreFoundation.Common;
+import com.james090500.CoreFoundation.Valid;
+import com.james090500.CoreFoundation.collection.SerializedMap;
+import com.james090500.CoreFoundation.debug.Debugger;
+import com.james090500.CoreFoundation.exception.EventHandledException;
+import com.james090500.CoreFoundation.model.*;
 import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.CommandSender;
-import org.mineacademy.bfo.ChatUtil;
-import org.mineacademy.bfo.Common;
-import org.mineacademy.bfo.FileUtil;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.collection.SerializedMap;
-import org.mineacademy.bfo.exception.EventHandledException;
-import org.mineacademy.bfo.model.*;
 import org.mineacademy.velocitycontrol.VelocityControl;
-import org.mineacademy.velocitycontrol.listener.Debugger;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Represents an operator that has require/ignore for both sender and receiver
  * Used for join/leave/kick/death messages yo
  */
 @Getter
-public abstract class PlayerMessage extends Operator {
+public abstract class PlayerMessage extends Operator implements Rule {
 
 	/**
 	 * The type of this message
@@ -175,11 +168,6 @@ public abstract class PlayerMessage extends Operator {
 	@Override
 	public final String getUid() {
 		return this.group;
-	}
-
-	@Override
-	public final File getFile() {
-		return FileUtil.getFile("messages/" + this.type.getKey() + ".rs");
 	}
 
 	/**
@@ -422,6 +410,7 @@ public abstract class PlayerMessage extends Operator {
 
 			// Delay
 			if (message.getDelay() != null) {
+				VelocityControl.getLogger().error("1");
 				final SimpleTime time = message.getDelay().getKey();
 				final long now = System.currentTimeMillis();
 
@@ -440,7 +429,6 @@ public abstract class PlayerMessage extends Operator {
 			boolean pickedMessage = false;
 
 			for (final Player player : VelocityControl.getPlayers()) {
-
 				if (this.sender != null) {
 					if (message.isRequireSelf() && !this.sender.equals(player))
 						continue;
@@ -477,7 +465,6 @@ public abstract class PlayerMessage extends Operator {
 		}
 
 		/**
-		 * @see Operator.OperatorCheck#canFilter(Operator)
 		 */
 		protected boolean canFilterMessage(T operator) {
 			Valid.checkNotNull(receiver, "receiver in canFilter == null");
@@ -494,7 +481,7 @@ public abstract class PlayerMessage extends Operator {
 
 				if (!this.sender.hasPermission(replaceVariables(permission, operator))) {
 					if (noPermissionMessage != null) {
-						sender.sendMessage(LegacyComponentSerializer.legacySection().deserialize(replaceVariables(noPermissionMessage, operator)));
+						sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(replaceVariables(noPermissionMessage, operator)));
 
 						throw new EventHandledException(true);
 					}
@@ -511,7 +498,7 @@ public abstract class PlayerMessage extends Operator {
 				if (!this.receiver.hasPermission(replaceReceiverVariables(permission, operator))) {
 					if (noPermissionMessage != null) {
 						receiver.sendMessage(
-							LegacyComponentSerializer.legacySection().deserialize(replaceReceiverVariables(noPermissionMessage, operator))
+							LegacyComponentSerializer.legacyAmpersand().deserialize(replaceReceiverVariables(noPermissionMessage, operator))
 						);
 
 						throw new EventHandledException(true);
@@ -629,55 +616,14 @@ public abstract class PlayerMessage extends Operator {
 		protected void executeOperators(T operator) throws EventHandledException {
 
 			// Use the same message for all players
-			final String message = this.pickedMessage;
+			String replaceVariables = replaceVariables(this.pickedMessage, operator).replace("{player}", player.getUsername());
 
-			if (!message.isEmpty() && !"none".equals(message)) {
-				String prefix = operator.getPrefix();
+			TextComponent prefix = LegacyComponentSerializer.legacyAmpersand().deserialize(operator.getPrefix());
+			TextComponent suffix = LegacyComponentSerializer.legacyAmpersand().deserialize(Common.getOrEmpty(operator.getSuffix()));
+			TextComponent message = LegacyComponentSerializer.legacyAmpersand().deserialize(replaceVariables);
+			TextComponent replaced = prefix.append(message).append(suffix);
 
-				// Send message as JSON
-				if ("[JSON]".equals(prefix) || message.startsWith("[JSON]")) {
-					String toSend = replaceVariables(message.startsWith("[JSON]") ? message : prefix + message, operator);
-					toSend = Variables.replace(message, (CommandSender) sender);
-
-					receiver.sendMessage(LegacyComponentSerializer.legacySection().deserialize(toSend));
-
-				}
-
-				// Send as interactive format otherwise
-				else {
-
-					// Construct
-					prefix = prefix != null ? prefix + (prefix.endsWith(" ") ? "" : " ") : "";
-					String replaced = replaceVariables(prefix + message + Common.getOrEmpty(operator.getSuffix()), operator);
-
-					// Support centering
-					final String[] replacedLines = replaced.split("\n");
-
-					for (int i = 0; i < replacedLines.length; i++) {
-						final String line = replacedLines[i];
-
-						if (Common.stripColors(line).startsWith("<center>"))
-							replacedLines[i] = ChatUtil.center(line.replace("<center>", "").trim());
-					}
-
-					replaced = String.join("\n", replacedLines);
-					replaced = replaceVariables(replaced.replace("{player}", getMessagePlayerForVariables().getUsername()), operator);
-
-					receiver.sendMessage(
-						LegacyComponentSerializer.legacySection().deserialize(replaced)
-					);
-				}
-
-				// Send to Bungee and Discord
-				/*if (!this.executed) {
-					if (BungeeCord.ENABLED && operator.isBungee()) {
-						if (json != null)
-							BungeeUtil.tellBungee(BungeePacket.JSON_BROADCAST, json);
-						else
-							BungeeUtil.tellBungee(BungeePacket.PLAIN_BROADCAST, message);
-					}
-				}*/
-			}
+			receiver.sendMessage(replaced);
 
 			// Register as received message
 			this.messageReceivers.add(receiver.getUniqueId());
@@ -687,10 +633,6 @@ public abstract class PlayerMessage extends Operator {
 
 			// Mark as executed, starting the first receiver
 			this.executed = true;
-		}
-
-		protected Player getMessagePlayerForVariables() {
-			return this.receiver;
 		}
 
 		/*

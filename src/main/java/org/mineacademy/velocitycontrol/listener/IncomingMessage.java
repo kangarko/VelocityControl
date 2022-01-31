@@ -2,11 +2,11 @@ package org.mineacademy.velocitycontrol.listener;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import com.james090500.CoreFoundation.Valid;
+import com.james090500.CoreFoundation.collection.SerializedMap;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.collection.SerializedMap;
 import org.mineacademy.velocitycontrol.VelocityControl;
 
 import java.util.Iterator;
@@ -101,7 +101,7 @@ public final class IncomingMessage extends Message {
     }
 
     public void forward(RegisteredServer server) {
-        VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), () -> dispatchMessage(server));
+        VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), () -> dispatchMessage(server)).schedule();
     }
 
     private void dispatchMessage(RegisteredServer server) {

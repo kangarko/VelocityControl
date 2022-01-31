@@ -1,19 +1,22 @@
 package org.mineacademy.velocitycontrol.listener;
 
+import com.james090500.CoreFoundation.collection.SerializedMap;
+import com.james090500.CoreFoundation.collection.StrictMap;
+import com.james090500.CoreFoundation.debug.Debugger;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.mineacademy.bfo.collection.SerializedMap;
-import org.mineacademy.bfo.collection.StrictMap;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 
@@ -122,7 +125,6 @@ public final class VelocityControlListener {
      * Handle and process incoming packet
      */
     private void handle(ServerConnection connection, IncomingMessage message) {
-
         // Get the raw data
         final byte[] data = message.getData();
 
@@ -130,7 +132,7 @@ public final class VelocityControlListener {
         this.senderUid = message.getSenderUid();
         this.serverName = Settings.getServerNameAlias(message.getServerName());
 
-        final ProxyPacket packet = (ProxyPacket) message.getAction();
+        final ProxyPacket packet = message.getAction();
 
         if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER)
             VelocityControl.getLogger().debug("Incoming packet " + packet + " from " + serverName);
@@ -148,7 +150,7 @@ public final class VelocityControlListener {
 
         else if (packet == ProxyPacket.FORWARD_COMMAND) {
             final String server = message.readString();
-            final String command = LegacyComponentSerializer.legacySection().serialize(Misc.colorize(message.readString().replace("{server_name}", serverName)));
+            final String command = message.readString().replace("{server_name}", serverName);
 
             if ("bungee".equals(server)) {
                 VelocityControl.getServer().getCommandManager().executeAsync(VelocityControl.getServer().getConsoleCommandSource(), command);
@@ -161,7 +163,6 @@ public final class VelocityControlListener {
 
             if (player.isPresent()) {
                 SyncedCache.uploadSingle(player.get().getUsername(), uniqueId, syncedCacheLine);
-
                 SwitchListener.broadcastPendingMessage(player.get());
             } else
                 forwardData(data, packet == ProxyPacket.DB_UPDATE);

@@ -1,11 +1,10 @@
 package org.mineacademy.velocitycontrol.listener;
 
+import com.james090500.CoreFoundation.Valid;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.bungee.BungeeAction;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 
@@ -35,11 +34,11 @@ abstract class Message {
 	 * The action
 	 */
 	@Getter
-	private BungeeAction action;
+	private ProxyPacket action;
 
 	/**
 	 * The current position of writing the data based on the
-	 * {@link BungeeAction#getContent()}
+	 * {@link ProxyPacket#getContent()}
 	 */
 	private int actionHead = 0;
 
@@ -75,7 +74,7 @@ abstract class Message {
 	 * static access in {@link org.mineacademy.bfo.bungee.message.OutgoingMessage
 	 */
 	protected final void setAction(String actionName) {
-		final BungeeAction action = ProxyPacket.getByName(actionName);
+		final ProxyPacket action = ProxyPacket.getByName(actionName);
 
 		Valid.checkNotNull(action, "Unknown action named: " + actionName + ".");
 		setAction(action);
@@ -87,15 +86,15 @@ abstract class Message {
 	 *
 	 * @param action
 	 */
-	protected final void setAction(BungeeAction action) {
+	protected final void setAction(ProxyPacket action) {
 		Valid.checkBoolean(this.action == null, "Action already set");
 
 		this.action = action;
 	}
 
 	/**
-	 * Ensures we are reading in the correct order as the given {@link BungeeAction}
-	 * specifies in its {@link BungeeAction#getContent()} getter.
+	 * Ensures we are reading in the correct order as the given {@link ProxyPacket}
+	 * specifies in its {@link ProxyPacket#getContent()} getter.
 	 *
 	 * This also ensures we are reading the correct data type (both primitives and wrappers
 	 * are supported).

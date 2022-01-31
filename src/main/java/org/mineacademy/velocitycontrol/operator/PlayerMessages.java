@@ -1,19 +1,10 @@
 package org.mineacademy.velocitycontrol.operator;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
+import com.james090500.CoreFoundation.FileUtil;
+import com.james090500.CoreFoundation.RuleSetReader;
+import com.james090500.CoreFoundation.collection.SerializedMap;
 import com.velocitypowered.api.proxy.Player;
-import org.mineacademy.bfo.Common;
-import org.mineacademy.bfo.FileUtil;
-import org.mineacademy.bfo.collection.SerializedMap;
-import org.mineacademy.bfo.model.RuleSetReader;
+import lombok.Getter;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.api.PlayerMessageEvent;
 import org.mineacademy.velocitycontrol.operator.Operator.OperatorCheck;
@@ -21,7 +12,12 @@ import org.mineacademy.velocitycontrol.operator.PlayerMessage.PlayerMessageCheck
 import org.mineacademy.velocitycontrol.operator.PlayerMessage.Type;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
-import lombok.Getter;
+import java.io.File;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Represents the core engine for player message broadcasting
@@ -63,42 +59,6 @@ public final class PlayerMessages extends RuleSetReader<PlayerMessage> {
 	}
 
 	/**
-	 * Attempt to find a rule by name
-	 *
-	 * @param type
-	 * @param group
-	 *
-	 * @return
-	 */
-	public PlayerMessage findMessage(JoinQuitKickMessage.Type type, String group) {
-		for (final PlayerMessage item : getMessages(type))
-			if (item.getGroup().equalsIgnoreCase(group))
-				return item;
-
-		return null;
-	}
-
-	/**
-	 * Return all player message names
-	 * @param type
-	 *
-	 * @return
-	 */
-	public Set<String> getMessageNames(JoinQuitKickMessage.Type type) {
-		return Common.convertSet(this.getMessages(type), PlayerMessage::getGroup);
-	}
-
-	/**
-	 * Return all player message that are also enabled in Apply_On in settings
-	 *
-	 * @param type
-	 * @return
-	 */
-	public Set<String> getEnabledMessageNames(JoinQuitKickMessage.Type type) {
-		return Common.convertSet(this.getMessages(type).stream().filter(message -> Settings.getSettings().Messages.Apply_On.contains(message.getType())).collect(Collectors.toList()), PlayerMessage::getGroup);
-	}
-
-	/**
 	 * Return immutable collection of all loaded broadcasts
 	 *
 	 * @param type
@@ -123,20 +83,18 @@ public final class PlayerMessages extends RuleSetReader<PlayerMessage> {
 	 * @param variables
 	 */
 	public static void broadcast(PlayerMessage.Type type, Player player, SerializedMap variables) {
-
 		if (Settings.getSettings().Messages.Apply_On.contains(type)) {
-
 			final OperatorCheck<?> check = new JoinQuitKickCheck(type, player, variables);
 			final PlayerMessageEvent event = new PlayerMessageEvent(player, type, check, variables);
 
 			VelocityControl.getServer().getEventManager().fire(event).thenApply(r -> {
 				if (r.getResult().isAllowed()) {
-					if (type == Type.JOIN)
+					if (type == Type.JOIN) {
 						VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), check::start)
-						.delay((int) Settings.getSettings().Messages.Defer_Join_Message_By, TimeUnit.MILLISECONDS);
-
-					else
+						.delay((int) Settings.getSettings().Messages.Defer_Join_Message_By, TimeUnit.MILLISECONDS).schedule();
+					} else {
 						check.start();
+					}
 				}
 				return r;
 			});
@@ -170,11 +128,6 @@ public final class PlayerMessages extends RuleSetReader<PlayerMessage> {
 		@Override
 		public List<PlayerMessage> getOperators() {
 			return this.messages;
-		}
-
-		@Override
-		protected Player getMessagePlayerForVariables() {
-			return this.sender;
 		}
 	}
 }
