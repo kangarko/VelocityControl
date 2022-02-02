@@ -614,7 +614,6 @@ public abstract class PlayerMessage extends Operator implements Rule {
 		 */
 		@Override
 		protected void executeOperators(T operator) throws EventHandledException {
-
 			// Use the same message for all players
 			String replaceVariables = replaceVariables(this.pickedMessage, operator).replace("{player}", player.getUsername());
 

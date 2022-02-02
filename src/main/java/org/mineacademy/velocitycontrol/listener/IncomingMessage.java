@@ -9,7 +9,6 @@ import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.mineacademy.velocitycontrol.VelocityControl;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 public final class IncomingMessage extends Message {

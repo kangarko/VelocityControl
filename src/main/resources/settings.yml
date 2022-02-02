@@ -1,10 +1,10 @@
 # !-----------------------------------------------------------------------------------------------!
-#                       Welcome to the main configuration of BungeeControl
+#                       Welcome to the main configuration of VelocityControl
 # !-----------------------------------------------------------------------------------------------!
 #
 #  *IMPORTANT* Ensure you set a unique name for each server in "server.properties" file
 #              in your root server folder. The name must be the same as your server name in
-#              BungeeCord config.yml.
+#              Velocity config.yml.
 #
 # !-----------------------------------------------------------------------------------------------!
 
@@ -24,10 +24,12 @@ Messages:
   # THIS SECTION IS WORK IN PROGRESS !!
  
   # What aspects of messages should be enabled?
-  # Options: join, quit, switch
+  # Options: JOIN, QUIT, SWITCH
+  # >>> CASE SENSITIVE! Must be in capitals otherwise you'll get an error! <<<
   #
   # If you have another plugin handling join/quit etc. messages, remove them from list below.
   # If you want to hide those messages, leave them in Apply_On and empty your messages/ .rs files.
+  # >>> CASE SENSITIVE! Must be in capitals otherwise you'll get an error! <<<
   Apply_On: []
   
   # List of server names (see Server_Aliases) that we ignore from broadcasting
@@ -60,7 +62,7 @@ Messages:
   Defer_Join_Message_By: 1
 
 # -------------------------------------------------------------------------------------------------
-# Intercepting bungeecord tab commands section - ONLY filters BungeeCord commands, to filter
+# Intercepting velocity tab commands section - ONLY filters Velocity commands, to filter
 # Spigot commands, configure ChatControl on your Spigot server(s).
 # -------------------------------------------------------------------------------------------------
 Tab_Complete:
@@ -119,7 +121,7 @@ Clusters:
 # By default we show important messages about our packets being sent and received. This helps you
 # understand how plugin works (or not works) and solve bugs.
 #
-# DO NOT disable this unless you have been using BungeeControl Red for a few weeks otherwise you
+# DO NOT disable this unless you have been using VelocityControl Red for a few weeks otherwise you
 # will miss out and then waste time reading our Wiki and opening tickets where things could easily
 # be explained simply by reading the console.
 # -------------------------------------------------------------------------------------------------

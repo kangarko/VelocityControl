@@ -8,7 +8,6 @@ import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;

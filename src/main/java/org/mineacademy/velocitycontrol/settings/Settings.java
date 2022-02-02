@@ -6,8 +6,8 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -46,9 +46,9 @@ public final class Settings {
 				}
 			}
 			try (Reader reader = new FileReader(file)) {
-				settings = new Yaml(
-					new CustomClassLoaderConstructor(SettingsFile.class.getClassLoader())
-				).loadAs(reader, SettingsFile.class);
+				LoaderOptions loaderOptions = new LoaderOptions();
+				//loaderOptions.setEnumCaseSensitive(false); When SnakeYAML updates!
+				settings = new Yaml(loaderOptions).loadAs(reader, SettingsFile.class);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -88,7 +88,6 @@ public final class Settings {
 	 * Clusters
 	 */
 	public static class Clusters {
-
 		public Boolean Enabled;
 		public Map<String, Set<String>> List;
 	}
@@ -98,7 +97,6 @@ public final class Settings {
 	 * Relay chat
 	 */
 	public static class ChatForwarding {
-
 		public boolean Enabled;
 		public ArrayList<String> To_Servers;
 		public ArrayList<String> From_Servers;
