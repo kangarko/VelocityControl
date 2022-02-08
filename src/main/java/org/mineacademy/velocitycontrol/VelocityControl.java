@@ -1,6 +1,7 @@
 package org.mineacademy.velocitycontrol;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
@@ -11,6 +12,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
+import org.mineacademy.velocitycontrol.command.ReloadCommand;
 import org.mineacademy.velocitycontrol.listener.*;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -75,6 +77,8 @@ public final class VelocityControl {
 		server.getEventManager().register(this, velocityControl);
 		this.onReloadablesStart();
 
+		CommandMeta commandMeta = server.getCommandManager().metaBuilder("reload").build();
+		server.getCommandManager().register(commandMeta, new ReloadCommand());
 	}
 
 	protected void onReloadablesStart() {
