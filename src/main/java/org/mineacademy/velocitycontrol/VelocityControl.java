@@ -77,7 +77,7 @@ public final class VelocityControl {
 		server.getEventManager().register(this, velocityControl);
 		this.onReloadablesStart();
 
-		CommandMeta commandMeta = server.getCommandManager().metaBuilder("reload").build();
+		CommandMeta commandMeta = server.getCommandManager().metaBuilder("vcreload").build();
 		server.getCommandManager().register(commandMeta, new ReloadCommand());
 	}
 
