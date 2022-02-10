@@ -8,6 +8,7 @@ import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -38,6 +39,7 @@ public final class Settings {
 			if(!VelocityControl.getFolder().toFile().exists()) {
 				VelocityControl.getFolder().toFile().mkdirs();
 			}
+
 			if (!file.exists()) {
 				try (InputStream in = Settings.class.getResourceAsStream("/settings.yml")) {
 					Files.copy(in, file.toPath());
@@ -45,10 +47,12 @@ public final class Settings {
 					e.printStackTrace();
 				}
 			}
+
 			try (Reader reader = new FileReader(file)) {
-				LoaderOptions loaderOptions = new LoaderOptions();
+				//LoaderOptions loaderOptions = new LoaderOptions();
 				//loaderOptions.setEnumCaseSensitive(false); When SnakeYAML updates!
-				settings = new Yaml(loaderOptions).loadAs(reader, SettingsFile.class);
+				CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(SettingsFile.class.getClassLoader());
+				settings = new Yaml(customClassLoaderConstructor).loadAs(reader, SettingsFile.class);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
