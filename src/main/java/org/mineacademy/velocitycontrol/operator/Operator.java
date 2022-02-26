@@ -1,40 +1,29 @@
 package org.mineacademy.velocitycontrol.operator;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-
+import com.james090500.CoreFoundation.Common;
+import com.james090500.CoreFoundation.FileUtil;
+import com.james090500.CoreFoundation.Valid;
+import com.james090500.CoreFoundation.collection.SerializedMap;
+import com.james090500.CoreFoundation.exception.EventHandledException;
+import com.james090500.CoreFoundation.exception.RegexTimeoutException;
+import com.james090500.CoreFoundation.model.*;
 import com.velocitypowered.api.proxy.Player;
 import lombok.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.mineacademy.bfo.Common;
-import org.mineacademy.bfo.FileUtil;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.collection.SerializedMap;
-import org.mineacademy.bfo.exception.EventHandledException;
-import org.mineacademy.bfo.exception.RegexTimeoutException;
-import org.mineacademy.bfo.model.RandomUtil;
-import org.mineacademy.bfo.model.Replacer;
-import org.mineacademy.bfo.model.SimpleTime;
-import org.mineacademy.bfo.model.Tuple;
-
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Operator implements org.mineacademy.bfo.model.Rule {
+public abstract class Operator implements Rule {
 
 	/**
 	 * Represents the date formatting using to evaluate "expires" operator
@@ -140,7 +129,7 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 	private long lastExecuted = -1;
 
 	/**
-	 * @see org.mineacademy.bfo.model.Rule#onOperatorParse(java.lang.String[])
+	 * @see Rule#onOperatorParse(java.lang.String[])
 	 */
 	@Override
 	public final boolean onOperatorParse(String[] args) {
@@ -148,7 +137,6 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 		final String theRest = Common.joinRange(args.length >= 2 ? 2 : 1, args);
 
 		final List<String> theRestSplit = splitVertically(theRest);
-
 		if ("expires".equals(args[0])) {
 			Valid.checkBoolean(this.expires == -1, "Operator 'expires' already defined on " + this);
 
@@ -411,8 +399,6 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 		 */
 		@Getter
 		protected boolean cancelledSilently;
-		@Getter
-		private static List<Player> players;
 
 		/**
 		 * Construct check and useful parameters
@@ -422,7 +408,7 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 			this.sender = sender;
 
 			this.isPlayer = sender instanceof Player;
-			this.player = isPlayer ? (Player) sender : null;
+			this.player = isPlayer ? sender : null;
 		}
 
 		public final void start() {
@@ -481,10 +467,10 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 			if (operator.getExpires() != -1 && System.currentTimeMillis() > operator.getExpires())
 				return false;
 
-			if (operator.isRequirePlayedBefore() && !players.contains(this.player))
+			if (operator.isRequirePlayedBefore() && !VelocityControl.getPlayers().contains(this.player))
 				return false;
 
-			if (operator.isIgnorePlayedBefore() && players.contains(this.player))
+			if (operator.isIgnorePlayedBefore() && VelocityControl.getPlayers().contains(this.player))
 				return false;
 
 			return true;
@@ -528,7 +514,7 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 					for (final Entry<UUID, String> entry : operator.getWarnMessages().entrySet()) {
 						final String warnMessage = RandomUtil.nextItem(splitVertically(entry.getValue())); // pick one in a list of |
 
-						sender.sendMessage(LegacyComponentSerializer.legacySection().deserialize(replaceVariables(warnMessage, operator)));
+						sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(replaceVariables(warnMessage, operator)));
 					}
 				});
 
@@ -569,7 +555,7 @@ public abstract class Operator implements org.mineacademy.bfo.model.Rule {
 					"nick", this.sender.getUsername(),
 					"player_group", "",
 					"player_prefix", "",
-					"player_server", this.sender instanceof Player ? ((Player) this.sender).getCurrentServer().get().getServerInfo().getName() : "",
+					"player_server", this.sender instanceof Player ? this.sender.getCurrentServer().get().getServerInfo().getName() : "",
 					"player_afk", "false",
 					"player_ignoring_pms", "false",
 					"player_vanished", "false");

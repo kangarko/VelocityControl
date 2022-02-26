@@ -1,22 +1,19 @@
 package org.mineacademy.velocitycontrol.settings;
 
+import com.james090500.CoreFoundation.collection.StrictMap;
+import com.james090500.CoreFoundation.model.IsInList;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
-import org.mineacademy.bfo.collection.StrictMap;
-import org.mineacademy.bfo.model.IsInList;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Represents the main plugin configuration
@@ -41,6 +38,7 @@ public final class Settings {
 			if(!VelocityControl.getFolder().toFile().exists()) {
 				VelocityControl.getFolder().toFile().mkdirs();
 			}
+
 			if (!file.exists()) {
 				try (InputStream in = Settings.class.getResourceAsStream("/settings.yml")) {
 					Files.copy(in, file.toPath());
@@ -48,10 +46,12 @@ public final class Settings {
 					e.printStackTrace();
 				}
 			}
+
 			try (Reader reader = new FileReader(file)) {
-				settings = new Yaml(
-					new CustomClassLoaderConstructor(SettingsFile.class.getClassLoader())
-				).loadAs(reader, SettingsFile.class);
+				//LoaderOptions loaderOptions = new LoaderOptions();
+				//loaderOptions.setEnumCaseSensitive(false); When SnakeYAML updates!
+				CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(SettingsFile.class.getClassLoader());
+				settings = new Yaml(customClassLoaderConstructor).loadAs(reader, SettingsFile.class);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -73,8 +73,7 @@ public final class Settings {
 	 * Settings for timed message broadcaster
 	 */
 	public static class Messages {
-
-		public HashSet<PlayerMessage.Type> Apply_On;
+		public ArrayList<PlayerMessage.Type> Apply_On = new ArrayList<>();
 		public ArrayList<String> Ignored_Servers = new ArrayList<>();
 		public Boolean Stop_On_First_Match;
 		public Map<PlayerMessage.Type, String> Prefix;
@@ -85,7 +84,6 @@ public final class Settings {
 	 * Settings for tab filter
 	 */
 	public static class TabComplete {
-
 		public StrictMap<String, IsInList<String>> Filter_Arguments;
 	}
 
@@ -93,7 +91,6 @@ public final class Settings {
 	 * Clusters
 	 */
 	public static class Clusters {
-
 		public Boolean Enabled;
 		public Map<String, Set<String>> List;
 	}
@@ -103,7 +100,6 @@ public final class Settings {
 	 * Relay chat
 	 */
 	public static class ChatForwarding {
-
 		public boolean Enabled;
 		public ArrayList<String> To_Servers;
 		public ArrayList<String> From_Servers;

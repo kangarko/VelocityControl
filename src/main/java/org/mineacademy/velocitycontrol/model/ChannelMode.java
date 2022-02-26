@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
-import org.mineacademy.bfo.Common;
 
 /**
  * Represents what mode the player is in the channel
@@ -34,20 +33,6 @@ public enum ChannelMode {
 	 */
 	@Getter
 	private final TextColor color;
-
-	/**
-	 * Load the mode from the config key
-	 *
-	 * @param key
-	 * @return
-	 */
-	public static ChannelMode fromKey(String key) {
-		for (final ChannelMode mode : values())
-			if (mode.key.equalsIgnoreCase(key))
-				return mode;
-
-		throw new IllegalArgumentException("No such channel mode: " + key + ". Available: " + Common.join(values(), ", ", ChannelMode::getKey));
-	}
 
 	@Override
 	public String toString() {

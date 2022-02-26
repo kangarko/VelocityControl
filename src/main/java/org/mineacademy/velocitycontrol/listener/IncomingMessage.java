@@ -2,14 +2,13 @@ package org.mineacademy.velocitycontrol.listener;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
+import com.james090500.CoreFoundation.Valid;
+import com.james090500.CoreFoundation.collection.SerializedMap;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.collection.SerializedMap;
 import org.mineacademy.velocitycontrol.VelocityControl;
 
-import java.util.Iterator;
 import java.util.UUID;
 
 public final class IncomingMessage extends Message {
@@ -78,30 +77,8 @@ public final class IncomingMessage extends Message {
         connection.sendPluginMessage(this.getChannel(), this.data);
     }
 
-    public void forwardToOthers() {
-        Iterator var1 = VelocityControl.getServers().iterator();
-
-        while (var1.hasNext()) {
-            RegisteredServer server = (RegisteredServer) var1.next();
-            if (!server.getServerInfo().getName().equals(this.getServerName())) {
-                this.forward(server);
-            }
-        }
-
-    }
-
-    public void forwardToAll() {
-        Iterator var1 = VelocityControl.getServers().iterator();
-
-        while (var1.hasNext()) {
-            RegisteredServer server = (RegisteredServer) var1.next();
-            this.forward(server);
-        }
-
-    }
-
     public void forward(RegisteredServer server) {
-        VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), () -> dispatchMessage(server));
+        VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), () -> dispatchMessage(server)).schedule();
     }
 
     private void dispatchMessage(RegisteredServer server) {

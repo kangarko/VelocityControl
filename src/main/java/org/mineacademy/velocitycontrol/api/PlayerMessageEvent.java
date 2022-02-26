@@ -1,11 +1,10 @@
 package org.mineacademy.velocitycontrol.api;
 
+import com.james090500.CoreFoundation.collection.SerializedMap;
 import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.proxy.Player;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.mineacademy.bfo.collection.SerializedMap;
 import org.mineacademy.velocitycontrol.operator.Operator.OperatorCheck;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
 

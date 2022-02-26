@@ -3,14 +3,15 @@ package org.mineacademy.velocitycontrol.listener;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.james090500.CoreFoundation.Valid;
+import com.james090500.CoreFoundation.collection.SerializedMap;
+import com.james090500.CoreFoundation.debug.Debugger;
+import com.james090500.CoreFoundation.exception.FoException;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import org.mineacademy.bfo.Valid;
-import org.mineacademy.bfo.bungee.BungeeAction;
-import org.mineacademy.bfo.collection.SerializedMap;
-import org.mineacademy.bfo.exception.FoException;
+import org.mineacademy.velocitycontrol.model.ProxyPacket;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,11 +21,11 @@ import java.util.UUID;
 public final class OutgoingMessage extends Message {
 	private final List<Object> queue;
 
-	public OutgoingMessage(BungeeAction action) {
+	public OutgoingMessage(ProxyPacket action) {
 		this(UUID.fromString("00000000-0000-0000-0000-000000000000"), "", action);
 	}
 
-	public OutgoingMessage(UUID fromSenderUid, String fromServerName, BungeeAction action) {
+	public OutgoingMessage(UUID fromSenderUid, String fromServerName, ProxyPacket action) {
 		this.queue = new ArrayList();
 		this.setSenderUid(fromSenderUid.toString());
 		this.setServerName(fromServerName);
