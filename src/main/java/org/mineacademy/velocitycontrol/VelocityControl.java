@@ -73,6 +73,7 @@ public final class VelocityControl {
 		server.getChannelRegistrar().register(CHANNEL);
 		server.getEventManager().register(this, new SwitchListener());
 		server.getEventManager().register(this, new ChatListener());
+		server.getEventManager().register(this, new CommandListener());
 		server.getEventManager().register(this, new PlayerListener());
 		server.getEventManager().register(this, velocityControl);
 		this.onReloadablesStart();
