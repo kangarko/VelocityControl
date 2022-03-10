@@ -3,13 +3,18 @@ package org.mineacademy.velocitycontrol.listener;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.command.CommandExecuteEvent;
 import com.velocitypowered.api.proxy.Player;
-import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.settings.Settings;
 
 public class CommandListener {
 
     @Subscribe
     public void onCommandEvent(CommandExecuteEvent event) {
+        //Lets not get commands that are forwarded!
+        if(event.getResult().isForwardToServer()) return;
+        //NOT WORKING?
+
         //Check send is a player and set player varialbe
         if(!(event.getCommandSource() instanceof Player)) return;
         Player commandSource = (Player) event.getCommandSource();
@@ -24,8 +29,10 @@ public class CommandListener {
 
             //Send spy message to all with permission
             if(player.hasPermission("chatcontrol.command.spy")) {
-                String spyString = String.format("[Spy] [P] {0}: {1}", commandSource.getGameProfile().getName(), event.getCommand());
-                player.sendMessage(Component.text(spyString));
+                String spyString = Settings.getSettings().Spy_Format;
+                spyString = spyString.replace("{player_name}", commandSource.getGameProfile().getName());
+                spyString = spyString.replace("{message}", "/" + event.getCommand());
+                player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(spyString));
             }
         });
     }

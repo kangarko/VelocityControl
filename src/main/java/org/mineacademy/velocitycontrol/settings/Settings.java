@@ -62,11 +62,12 @@ public final class Settings {
 	private static SettingsFile settings;
 
 	public static class SettingsFile {
+		public Map<String, String> Server_Aliases;
 		public Messages Messages;
-		public Clusters Clusters;
 		public TabComplete Tab_Complete;
 		public ChatForwarding Chat_Forwarding;
-		public Map<String, String> Server_Aliases;
+		public Clusters Clusters;
+		public String Spy_Format;
 	}
 
 	/**

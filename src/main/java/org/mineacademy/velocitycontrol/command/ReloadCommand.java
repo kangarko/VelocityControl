@@ -2,6 +2,7 @@ package org.mineacademy.velocitycontrol.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
@@ -10,7 +11,7 @@ public class ReloadCommand implements SimpleCommand {
     public void execute(Invocation invocation) {
         Settings.load();
         PlayerMessages.getInstance().load();
-        invocation.source().sendMessage(Component.text("&a[VelocityControl] Reloaded"));
+        invocation.source().sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize("&a[VelocityControl] Reloaded"));
     }
 
     @Override
