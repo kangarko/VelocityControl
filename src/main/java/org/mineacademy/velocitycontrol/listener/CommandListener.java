@@ -12,8 +12,7 @@ public class CommandListener {
     @Subscribe
     public void onCommandEvent(CommandExecuteEvent event) {
         //Lets not get commands that are forwarded!
-        if(event.getResult().isForwardToServer()) return;
-        //NOT WORKING?
+        if(!VelocityControl.getServer().getCommandManager().hasCommand(event.getCommand())) return;
 
         //Check send is a player and set player varialbe
         if(!(event.getCommandSource() instanceof Player)) return;
