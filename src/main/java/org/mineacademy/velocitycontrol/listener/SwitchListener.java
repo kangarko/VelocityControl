@@ -11,6 +11,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import lombok.NonNull;
+import org.mineacademy.velocitycontrol.ServerCache;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
@@ -87,6 +88,7 @@ public final class SwitchListener {
 	public void onDisconnect(DisconnectEvent event) {
 		final Player player = event.getPlayer();
 		final String playerName = event.getPlayer().getUsername();
+		final ServerCache cache = ServerCache.getInstance();
 		final RegisteredServer server = this.players.remove(player.getUniqueId());
 
 		if (server != null && !isSilent(server.getServerInfo())) {
@@ -100,8 +102,11 @@ public final class SwitchListener {
 
 			if (synced != null && !synced.isVanished() && !isSilent(fromServer)) {
 				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, SerializedMap.of("server", fromServer));
-			}
 
+				if (!cache.isPlayerRegistered(player)) {
+					cache.registerPlayer(player);
+				}
+			}
 		}
 	}
 

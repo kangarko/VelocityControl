@@ -12,6 +12,7 @@ import lombok.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.mineacademy.velocitycontrol.ServerCache;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
 
@@ -467,10 +468,12 @@ public abstract class Operator implements Rule {
 			if (operator.getExpires() != -1 && System.currentTimeMillis() > operator.getExpires())
 				return false;
 
-			if (operator.isRequirePlayedBefore() && !VelocityControl.getPlayers().contains(this.player))
+			final ServerCache cache = ServerCache.getInstance();
+
+			if (operator.isRequirePlayedBefore() && !cache.isPlayerRegistered(this.player))
 				return false;
 
-			if (operator.isIgnorePlayedBefore() && VelocityControl.getPlayers().contains(this.player))
+			if (operator.isIgnorePlayedBefore() && cache.isPlayerRegistered(this.player))
 				return false;
 
 			return true;

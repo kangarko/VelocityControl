@@ -37,52 +37,9 @@ public final class IncomingMessage extends Message {
         return this.input.readUTF();
     }
 
-    public boolean readBoolean() {
-        this.moveHead(Boolean.class);
-        return this.input.readBoolean();
-    }
-
-    public byte readByte() {
-        this.moveHead(Byte.class);
-        return this.input.readByte();
-    }
-
-    public double readDouble() {
-        this.moveHead(Double.class);
-        return this.input.readDouble();
-    }
-
-    public float readFloat() {
-        this.moveHead(Float.class);
-        return this.input.readFloat();
-    }
-
-    public int readInt() {
-        this.moveHead(Integer.class);
-        return this.input.readInt();
-    }
-
-    public long readLong() {
-        this.moveHead(Long.class);
-        return this.input.readLong();
-    }
-
-    public short readShort() {
-        this.moveHead(Short.class);
-        return this.input.readShort();
-    }
-
     public void forward(ChannelMessageSink connection) {
         Valid.checkBoolean(connection instanceof ServerConnection, "Connection must be ServerConnection", new Object[0]);
         connection.sendPluginMessage(this.getChannel(), this.data);
-    }
-
-    public void forward(RegisteredServer server) {
-        VelocityControl.getServer().getScheduler().buildTask(VelocityControl.getInstance(), () -> dispatchMessage(server)).schedule();
-    }
-
-    private void dispatchMessage(RegisteredServer server) {
-        server.sendPluginMessage(VelocityControl.CHANNEL, this.data);
     }
 
     public byte[] getData() {

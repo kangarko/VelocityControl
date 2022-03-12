@@ -115,17 +115,11 @@ Clusters:
   List: {}
 
 # -------------------------------------------------------------------------------------------------
-# List of section names that will print informative messages about their features.
-# You normally don't need to edit this unless you have problems or been navigated by the dev.
-#
-# By default we show important messages about our packets being sent and received. This helps you
-# understand how plugin works (or not works) and solve bugs.
-#
-# DO NOT disable this unless you have been using VelocityControl Red for a few weeks otherwise you
-# will miss out and then waste time reading our Wiki and opening tickets where things could easily
-# be explained simply by reading the console.
+# The format for /spy with proxy commands
+# {player_name} = Players username
+# {message} = Command that was run
 # -------------------------------------------------------------------------------------------------
-
+Spy_Format: "&8[&5Spy&8] &7[&6P&7] &#707070{player_name}: {message}"
 
 # -------------------------------------------------------------------------------------------------
 # Do not change this value, otherwise it will corrupt your plugin installation!
