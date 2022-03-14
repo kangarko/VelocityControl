@@ -352,6 +352,7 @@ public final class SyncedCache {
 				final Map.Entry<String, SyncedCache> entry = it.next();
 				final String playerName = entry.getKey();
 
+				//TODO possible race condition if player removed before leave message?
 				if (!onlinePlayers.containsKey(playerName))
 					it.remove();
 			}

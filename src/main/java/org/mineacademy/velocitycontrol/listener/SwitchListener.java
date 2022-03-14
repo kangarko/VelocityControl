@@ -84,7 +84,7 @@ public final class SwitchListener {
 		}
 	}
 
-	@Subscribe(order = PostOrder.LAST)
+	@Subscribe(order = PostOrder.FIRST)
 	public void onDisconnect(DisconnectEvent event) {
 		final Player player = event.getPlayer();
 		final String playerName = event.getPlayer().getUsername();
@@ -92,14 +92,11 @@ public final class SwitchListener {
 		final RegisteredServer server = this.players.remove(player.getUniqueId());
 
 		if (server != null && !isSilent(server.getServerInfo())) {
-			final Collection<Player> allPlayers = new HashSet<>(VelocityControl.getPlayers());
-			final Collection<Player> fromPlayers = server.getPlayersConnected();
-
-			allPlayers.removeAll(fromPlayers);
-
 			final String fromServer = Settings.getServerNameAlias(server);
 			final SyncedCache synced = SyncedCache.fromName(playerName);
 
+			VelocityControl.getLogger().warn("Sync ingo");
+			VelocityControl.getLogger().warn(String.valueOf(synced != null));
 			if (synced != null && !synced.isVanished() && !isSilent(fromServer)) {
 				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, SerializedMap.of("server", fromServer));
 
