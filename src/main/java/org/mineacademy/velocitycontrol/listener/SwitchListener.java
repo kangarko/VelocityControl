@@ -95,8 +95,6 @@ public final class SwitchListener {
 			final String fromServer = Settings.getServerNameAlias(server);
 			final SyncedCache synced = SyncedCache.fromName(playerName);
 
-			VelocityControl.getLogger().warn("Sync ingo");
-			VelocityControl.getLogger().warn(String.valueOf(synced != null));
 			if (synced != null && !synced.isVanished() && !isSilent(fromServer)) {
 				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, SerializedMap.of("server", fromServer));
 
