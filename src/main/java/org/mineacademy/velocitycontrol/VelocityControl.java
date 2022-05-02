@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
 * The main VelocityControl Red plugin class.
 */
-@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.9.3", authors = {"kangarko", "relavis", "james090500"})
+@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.9.4", authors = {"kangarko", "relavis", "james090500"})
 public final class VelocityControl {
 	@Getter
 	private static VelocityControl instance;

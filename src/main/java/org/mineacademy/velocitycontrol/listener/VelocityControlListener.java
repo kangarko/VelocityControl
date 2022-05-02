@@ -55,6 +55,7 @@ public final class VelocityControlListener {
         AFK,
         IGNORE,
         IGNORE_PMS,
+        IGNORE_SOUND_NOTIFY,
         CHANNELS,
         VAULT
     }

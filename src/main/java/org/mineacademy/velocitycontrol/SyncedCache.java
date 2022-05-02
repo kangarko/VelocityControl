@@ -65,6 +65,11 @@ public final class SyncedCache {
 	private boolean ignoringPMs;
 
 	/**
+	 * Is the player ignoring sound notifications
+	 */
+	private boolean ignoringSoundNotify;
+
+	/**
 	 * List of ignored dudes
 	 */
 	private Set<UUID> ignoredPlayers = new HashSet<>();;
@@ -118,6 +123,9 @@ public final class SyncedCache {
 
 			else if ("IM".equals(sectionName))
 				this.ignoringPMs = Builder.parseBoolean(sectionValue);
+
+			else if ("IN".equals(sectionName))
+				this.ignoringSoundNotify = Builder.parseBoolean(sectionValue);
 
 			else if ("IP".equals(sectionName))
 				this.ignoredPlayers = Builder.parseUUIDList(sectionValue);
@@ -195,6 +203,15 @@ public final class SyncedCache {
 	}
 
 	/**
+	 * Return true if this dude is ignoring sound notifications
+	 *
+	 * @return
+	 */
+	public boolean isIgnoringSoundNotifications() {
+		return this.ignoringSoundNotify;
+	}
+
+	/**
 	 * Convert into known variables usable in chat
 	 *
 	 * @return
@@ -210,6 +227,7 @@ public final class SyncedCache {
 				"player_server", this.getServerName(),
 				"player_afk", this.isAfk() ? "true" : "false",
 				"player_ignoring_pms", this.isIgnoringPMs() ? "true" : "false",
+				"player_ignoring_sound_notifications", this.isIgnoringSoundNotify() ? "true" : "false",
 				"player_vanished", this.isVanished() ? "true" : "false");
 	}
 
