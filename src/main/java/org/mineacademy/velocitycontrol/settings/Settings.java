@@ -67,7 +67,7 @@ public final class Settings {
 		public TabComplete Tab_Complete;
 		public ChatForwarding Chat_Forwarding;
 		public Clusters Clusters;
-		public String Spy_Format;
+		public Spy Spy;
 	}
 
 	/**
@@ -89,15 +89,6 @@ public final class Settings {
 	}
 
 	/**
-	 * Clusters
-	 */
-	public static class Clusters {
-		public Boolean Enabled;
-		public Map<String, Set<String>> List;
-	}
-
-
-	/**
 	 * Relay chat
 	 */
 	public static class ChatForwarding {
@@ -106,10 +97,24 @@ public final class Settings {
 		public ArrayList<String> From_Servers;
 	}
 
-	private static Map<String, String> Server_Aliases;
+	/**
+	 * Clusters
+	 */
+	public static class Clusters {
+		public Boolean Enabled;
+		public Map<String, Set<String>> List;
+	}
 
 	/**
-	 * A helper method to use {@link #Server_Aliases} or return the default server name if alias not set
+	 * Spy
+	 */
+	public static class Spy {
+		public String Format;
+		public ArrayList<String> Spied_Commands;
+	}
+
+	/**
+	 * A helper method to use {@link #getSettings().Server_Aliases} or return the default server name if alias not set
 	 *
 	 * @param info
 	 * @return
@@ -121,7 +126,7 @@ public final class Settings {
 	}
 
 	/**
-	 * A helper method to use {@link #Server_Aliases} or return the default server name if alias not set
+	 * A helper method to use {@link #getSettings().Server_Aliases} or return the default server name if alias not set
 	 *
 	 * @param serverName
 	 * @return
