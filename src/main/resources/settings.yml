@@ -115,11 +115,25 @@ Clusters:
   List: {}
 
 # -------------------------------------------------------------------------------------------------
-# The format for /spy with proxy commands
+# The format for /spy with proxy commands. Set to "None" to disable completely
 # {player_name} = Players username
 # {message} = Command that was run
+#
+# If Spied_Commands is not empty, you will only see commands in that list
+# For the example below, you will only see if someone runs /examplecommand
+# Spied_Commands:
+#   - "examplecommand"
+#
+# If you want Spied_Commands to be a black list (to ignore a specific commmand) you can do this
+# For the example below, you will see all commands BUT /examplecommand
+# Spied_Commands:
+#   - "@blacklist"
+#   - "examplecommand"
+#
 # -------------------------------------------------------------------------------------------------
-Spy_Format: "&8[&5Spy&8] &7[&6P&7] &#707070{player_name}: {message}"
+Spy:
+  Format: "&8[&5Spy&8] &7[&6P&7] &#707070{player_name}: {message}"
+  Spied_Commands:
 
 # -------------------------------------------------------------------------------------------------
 # Do not change this value, otherwise it will corrupt your plugin installation!

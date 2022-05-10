@@ -7,10 +7,16 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
+import java.util.Locale;
+
 public class CommandListener {
 
     @Subscribe
     public void onCommandEvent(CommandExecuteEvent event) {
+        //If format is none we can turn it off
+        String spyString = Settings.getSettings().Spy.Format;
+        if(spyString.equalsIgnoreCase("none")) return;
+
         //Lets not get commands that are forwarded!
         if(!VelocityControl.getServer().getCommandManager().hasCommand(event.getCommand())) return;
 
@@ -21,6 +27,17 @@ public class CommandListener {
         //Check sender doesn't have a bypass permission
         if(commandSource.hasPermission("chatcontrol.bypass.spy")) return;
 
+        //Check if we are only spying specific commands
+        if(Settings.getSettings().Spy.Spied_Commands.size() > 0) {
+            String commandOnly = event.getCommand().toLowerCase().split(" ")[0];
+            Boolean blackList = Settings.getSettings().Spy.Spied_Commands.contains("@blacklist");
+            Boolean containCommand = Settings.getSettings().Spy.Spied_Commands.contains(commandOnly);
+
+            //If we are a blacklist and we contain the command, let returns
+            //If we are NOT a blacklist and DONT contain the command lets return;
+            if((blackList && containCommand) || (!blackList && !containCommand)) return;
+        }
+
         //Loop through all players
         VelocityControl.getPlayers().forEach(player -> {
             //Don't send spy to themselves
@@ -28,7 +45,6 @@ public class CommandListener {
 
             //Send spy message to all with permission
             if(player.hasPermission("chatcontrol.command.spy")) {
-                String spyString = Settings.getSettings().Spy_Format;
                 spyString = spyString.replace("{player_name}", commandSource.getGameProfile().getName());
                 spyString = spyString.replace("{message}", "/" + event.getCommand());
                 player.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(spyString));
