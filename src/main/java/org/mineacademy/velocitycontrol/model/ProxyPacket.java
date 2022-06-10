@@ -149,10 +149,9 @@ public enum ProxyPacket {
 	),
 
 	/**
-	 * This will sync one mail to BungeeCord.
-	 * Sent after MAIL_SYNC_START.
+	 * This will sync mails to BungeeCord
 	 */
-	MAIL_SYNC(String.class /*mail as json*/
+	MAIL_SYNC_V2(String.class /*mail as json*/
 	),
 
 	/**
