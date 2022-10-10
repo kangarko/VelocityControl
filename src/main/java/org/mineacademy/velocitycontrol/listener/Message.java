@@ -5,6 +5,7 @@ import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 
@@ -17,6 +18,10 @@ import java.util.UUID;
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class Message {
+
+	@Getter
+	@Setter
+	private String channelName;
 
 	/**
 	 * The UUID of the sender who initiated the packet, can be null

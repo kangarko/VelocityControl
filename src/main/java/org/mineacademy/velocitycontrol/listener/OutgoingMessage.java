@@ -22,11 +22,12 @@ public final class OutgoingMessage extends Message {
 	private final List<Object> queue;
 
 	public OutgoingMessage(ProxyPacket action) {
-		this(UUID.fromString("00000000-0000-0000-0000-000000000000"), "", action);
+		this(action.name(), UUID.fromString("00000000-0000-0000-0000-000000000000"), "", action);
 	}
 
-	public OutgoingMessage(UUID fromSenderUid, String fromServerName, ProxyPacket action) {
+	public OutgoingMessage(String channelName, UUID fromSenderUid, String fromServerName, ProxyPacket action) {
 		this.queue = new ArrayList();
+		this.setChannelName(channelName);
 		this.setSenderUid(fromSenderUid.toString());
 		this.setServerName(fromServerName);
 		this.setAction(action);

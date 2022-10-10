@@ -24,7 +24,7 @@ import java.util.Collection;
 /**
 * The main VelocityControl Red plugin class.
 */
-@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.10.0", authors = {"kangarko", "relavis", "james090500"})
+@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.0", authors = {"kangarko", "relavis", "james090500"})
 public final class VelocityControl {
 	@Getter
 	private static VelocityControl instance;
@@ -41,7 +41,7 @@ public final class VelocityControl {
 	* The channel we are broadcasting at
 	*/
 	public static final MinecraftChannelIdentifier CHANNEL = MinecraftChannelIdentifier.create(
-		"plugin", "chcred"
+		"plugin", "plugin:chcred"
 	);
 
 	/**

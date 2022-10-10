@@ -18,6 +18,7 @@ public final class IncomingMessage extends Message {
     public IncomingMessage(byte[] data) {
         this.data = data;
         this.input = ByteStreams.newDataInput(data);
+        this.setChannelName(this.input.readUTF());
         this.setSenderUid(this.input.readUTF());
         this.setServerName(this.input.readUTF());
         this.setAction(this.input.readUTF());

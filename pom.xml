@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <artifactId>VelocityControl</artifactId>
     <groupId>org.mineacademy</groupId>
-    <version>3.10.0</version>
+    <version>3.11.0</version>
     <modelVersion>4.0.0</modelVersion>
 
     <properties>
@@ -16,8 +16,8 @@
 
     <repositories>
         <repository>
-            <id>velocity</id>
-            <url>https://papermc.io/repo/repository/maven-releases/</url>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
