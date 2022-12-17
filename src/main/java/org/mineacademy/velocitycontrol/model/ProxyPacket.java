@@ -74,13 +74,13 @@ public enum ProxyPacket {
 	/**
 	 * Broadcast message to spying players
 	 */
-	SPY(String.class /*spy type*/, String.class /*channel name*/, String.class /*message*/, String.class /*simplecomponent json*/, String.class /*json string list of UUIDs of players we should ignore*/
+	SPY(String.class /*spy type*/, String.class /*channel name*/, Boolean.class, /*TODO*/ String.class /*message*/, String.class /*simplecomponent json*/, String.class /*json string list of UUIDs of players we should ignore*/
 	),
 
 	/**
 	 * Send a toast message
 	 */
-	TOAST(UUID.class /*receiver UUID*/, String.class /*toggle type*/, String.class /*message*/, String.class /*compmaterial*/
+	TOAST(UUID.class /*receiver UUID*/, String.class /*toggle type*/, String.class /*message*/, String.class, /*compmaterial*/ String.class /*TODO*/
 	),
 
 	/**
@@ -138,7 +138,7 @@ public enum ProxyPacket {
 	/**
 	 * Indicates MySQL has changed for player and we need pulling it again
 	 */
-	DB_UPDATE(String.class /*player name*/, String.class /*player UUID*/, String.class /*data JSON*/, String.class /*message to player*/
+	DB_UPDATE(String.class /*player name*/, String.class /*player UUID*/, String.class /*data JSON*/, String.class, /*message to player*/ String.class /*TODO*/
 	),
 
 	/**

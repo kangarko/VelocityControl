@@ -22,18 +22,18 @@ public final class OutgoingMessage extends Message {
 	private final List<Object> queue;
 
 	public OutgoingMessage(ProxyPacket action) {
-		this(action.name(), UUID.fromString("00000000-0000-0000-0000-000000000000"), "", action);
+		this(UUID.fromString("00000000-0000-0000-0000-000000000000"), "", action);
 	}
 
-	public OutgoingMessage(String channelName, UUID fromSenderUid, String fromServerName, ProxyPacket action) {
+	public OutgoingMessage(UUID fromSenderUid, String fromServerName, ProxyPacket action) {
 		this.queue = new ArrayList();
-		this.setChannelName(channelName);
-		this.setSenderUid(fromSenderUid.toString());
-		this.setServerName(fromServerName);
-		this.setAction(action);
+		setSenderUid(fromSenderUid.toString());
+		setServerName(fromServerName);
+		setAction(action);
 		this.queue.add(fromSenderUid);
-		this.queue.add(fromServerName);
-		this.queue.add(action.name());
+		this.queue.add(getServerName());
+		this.queue.add(getAction().name());
+
 	}
 
 	public void writeString(String... messages) {
@@ -95,7 +95,7 @@ public final class OutgoingMessage extends Message {
 		}
 
 		Valid.checkBoolean(connection instanceof ServerConnection, "Connection must be ServerConnection", new Object[0]);
-		((ServerConnection)connection).sendPluginMessage(this.getChannel(), this.compileData());
+		connection.sendPluginMessage(this.getChannel(), this.compileData());
 		Debugger.debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + ((ServerConnection)connection).getServerInfo().getName() + " server."});
 	}
 

@@ -57,7 +57,8 @@ public final class VelocityControlListener {
         IGNORE_PMS,
         IGNORE_SOUND_NOTIFY,
         CHANNELS,
-        VAULT
+        VAULT,
+        PACK_LOADED
     }
 
     /**
@@ -119,6 +120,9 @@ public final class VelocityControlListener {
                     "Server: " + connection.getServerInfo().getName(),
                     "Error: " + t.getClass().getSimpleName() + ": " + t.getMessage());*/
         }
+
+        //Set message has handles to avoid client spam/forwarding
+        event.setResult(PluginMessageEvent.ForwardResult.handled());
     }
 
     /*

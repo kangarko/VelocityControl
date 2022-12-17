@@ -41,13 +41,13 @@ public final class VelocityControl {
 	* The channel we are broadcasting at
 	*/
 	public static final MinecraftChannelIdentifier CHANNEL = MinecraftChannelIdentifier.create(
-		"plugin", "plugin:chcred"
+		"plugin", "chcred"
 	);
 
 	/**
 	 * The listener
 	 */
-	private VelocityControlListener velocityControl;
+	@Getter private VelocityControlListener velocityControl;
 
 	@Inject
 	public VelocityControl(final ProxyServer proxyServer, final Logger _logger, final @DataDirectory Path dataDirectory) {
