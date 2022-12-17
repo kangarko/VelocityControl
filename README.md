@@ -1,4 +1,4 @@
-# !! For help, reporting issues or suggestions, [click here](https://github.com/kangarko/ChatControl-Red/issues). Please note VelocityControl is maintained by a third-party developer in his spare time !!
+# !! For help, reporting issues or suggestions, [click here](https://github.com/kangarko/ChatControl-Red/issues). !!
 
 ## VelocityControl
 
@@ -7,6 +7,9 @@ VelocityControl is a BungeeControl-fork plugin enabling ChatControl Red to conne
 Ensure you have MySQL enabled before using in your mysql.yml file.
 
 Important copyright information, please see below.
+
+## Important Notice Regarding Support
+Please note VelocityControl is maintained by a third-party developer in his spare time. I, Matej, actively develop ChatControl Red and BungeeControl Red only.
 
 # Report issues here:
 https://github.com/kangarko/ChatControl-Red/issues
