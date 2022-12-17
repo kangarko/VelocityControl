@@ -4,9 +4,12 @@
 
 VelocityControl is a BungeeControl-fork plugin enabling ChatControl Red to connect with your Velocity network.
 
-Ensure you have MySQL enabled before using.
+Ensure you have MySQL enabled before using in your mysql.yml file.
 
 Important copyright information, please see below.
+
+## Important Notice Regarding Support
+Please note VelocityControl is maintained by a third-party developer in his spare time. I, Matej, actively develop ChatControl Red and BungeeControl Red only.
 
 # Report issues here:
 https://github.com/kangarko/ChatControl-Red/issues
