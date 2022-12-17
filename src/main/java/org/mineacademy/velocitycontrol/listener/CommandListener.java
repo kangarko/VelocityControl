@@ -9,7 +9,6 @@ import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class CommandListener {
 

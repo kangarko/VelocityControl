@@ -47,7 +47,7 @@ public final class VelocityControl {
 	/**
 	 * The listener
 	 */
-	@Getter private VelocityControlListener velocityControl;
+	private VelocityControlListener velocityControl;
 
 	@Inject
 	public VelocityControl(final ProxyServer proxyServer, final Logger _logger, final @DataDirectory Path dataDirectory) {

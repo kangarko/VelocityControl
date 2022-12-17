@@ -1,7 +1,6 @@
 package org.mineacademy.velocitycontrol.command;
 
 import com.velocitypowered.api.command.SimpleCommand;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;

@@ -13,12 +13,13 @@ import com.velocitypowered.api.proxy.server.ServerInfo;
 import lombok.NonNull;
 import org.mineacademy.velocitycontrol.ServerCache;
 import org.mineacademy.velocitycontrol.SyncedCache;
-import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Handles join, quit and server switch messages.
