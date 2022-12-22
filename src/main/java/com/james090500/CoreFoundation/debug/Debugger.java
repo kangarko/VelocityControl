@@ -134,7 +134,8 @@ public final class Debugger {
 	 */
 
 	public static void debug(String a, String b) {
-		VelocityControl.getLogger().debug("[" + a + "] " + b);
+		if(!debugAll) return;
+		VelocityControl.getLogger().info("[" + a + "] " + b);
 	}
 
 	public static void debug(String a, String[] b) {

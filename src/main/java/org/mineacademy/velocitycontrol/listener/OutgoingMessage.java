@@ -96,12 +96,10 @@ public final class OutgoingMessage extends Message {
 
 		Valid.checkBoolean(connection instanceof ServerConnection, "Connection must be ServerConnection", new Object[0]);
 		connection.sendPluginMessage(this.getChannel(), this.compileData());
-		Debugger.debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + ((ServerConnection)connection).getServerInfo().getName() + " server."});
 	}
 
 	public void send(RegisteredServer server) {
 		server.sendPluginMessage(this.getChannel(), this.compileData());
-		Debugger.debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server."});
 	}
 
 	public byte[] compileData() {

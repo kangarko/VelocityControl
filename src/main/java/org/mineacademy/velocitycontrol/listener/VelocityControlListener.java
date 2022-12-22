@@ -138,10 +138,9 @@ public final class VelocityControlListener {
 
         final ProxyPacket packet = message.getAction();
 
-
-        if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER) {
-            VelocityControl.getLogger().debug("Incoming packet " + packet + " from " + serverName);
-        }
+//        if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER) {
+//            VelocityControl.getLogger().debug("Incoming packet " + packet + " from " + serverName);
+//        }
 
         if (packet == ProxyPacket.PLAYERS_CLUSTER_DATA) {
             synchronized (this.clusteredData) {
@@ -157,7 +156,7 @@ public final class VelocityControlListener {
             final String server = message.readString();
             final String command = message.readString().replace("{server_name}", serverName);
 
-            if ("bungee".equals(server)) {
+            if ("velocity".equals(server)) {
                 VelocityControl.getServer().getCommandManager().executeAsync(VelocityControl.getServer().getConsoleCommandSource(), command);
             } else {
                 forwardData(data, false);
