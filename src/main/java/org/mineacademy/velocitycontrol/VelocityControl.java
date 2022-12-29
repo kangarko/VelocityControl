@@ -14,6 +14,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.command.ReloadCommand;
+import org.mineacademy.velocitycontrol.foundation.model.JavaScriptExecutor;
 import org.mineacademy.velocitycontrol.listener.*;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 /**
 * The main VelocityControl Red plugin class.
@@ -89,6 +91,11 @@ public final class VelocityControl {
 		getServer().getConsoleCommandSource().sendMessage(
 				LegacyComponentSerializer.legacyAmpersand().deserialize("&a[VelocityControl] Loaded in " + time + "ms!")
 		);
+
+		//Clear cache
+		VelocityControl.getServer().getScheduler().buildTask(this, () -> {
+			JavaScriptExecutor.clearCache();
+		}).repeat(1, TimeUnit.SECONDS).schedule();
 	}
 
 	protected void onReloadablesStart() {
@@ -103,12 +110,6 @@ public final class VelocityControl {
 	/* ------------------------------------------------------------------------------- */
 	/* Methods */
 	/* ------------------------------------------------------------------------------- */
-
-	public static void debug(String a, String b) {
-		if(Settings.getSettings().Debug) {
-			VelocityControl.getLogger().info("[" + a + "] " + b);
-		}
-	}
 
 	/**
 	 * Return all servers on the network or Redis
@@ -133,9 +134,8 @@ public final class VelocityControl {
 	 * Forwards the given message as the given sender to non-empty server.
 	 *
 	 * @param message
-	 * @param player
 	 */
-	public static void forwardMessage(OutgoingMessage message, Player player) {
+	public static void forwardMessage(OutgoingMessage message) {
 		final byte[] data = message.compileData();
 
 		for (final RegisteredServer registeredServer: getServers()) {

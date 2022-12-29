@@ -38,67 +38,25 @@ public final class OutgoingMessage extends Message {
 
 		for(int var4 = 0; var4 < var3; ++var4) {
 			String message = var2[var4];
-			this.write(message, String.class);
+			this.write(message);
 		}
 
 	}
 
 	public void writeMap(HashMap<String, UUID> map) {
 		Gson gson = new Gson();
-		write(gson.toJson(map), String.class);
+		write(gson.toJson(map));
 	}
 
-	public void writeBoolean(boolean bool) {
-		this.write(bool, Boolean.class);
-	}
-
-	public void writeByte(byte number) {
-		this.write(number, Byte.class);
-	}
-
-	public void writeDouble(double number) {
-		this.write(number, Double.class);
-	}
-
-	public void writeFloat(float number) {
-		this.write(number, Float.class);
-	}
-
-	public void writeInt(int number) {
-		this.write(number, Integer.class);
-	}
-
-	public void writeLong(long number) {
-		this.write(number, Long.class);
-	}
-
-	public void writeShort(short number) {
-		this.write(number, Short.class);
-	}
-
-	public void writeUUID(UUID uuid) {
-		this.write(uuid, UUID.class);
-	}
-
-	private void write(Object object, Class<?> typeOf) {
+	private void write(Object object) {
 		Preconditions.checkNotNull(object, "Added object must not be null!");
-		this.moveHead(typeOf);
+		this.moveHead();
 		this.queue.add(object);
-	}
-
-	public void send(ChannelMessageSink connection) {
-		if (connection instanceof Player) {
-			connection = ((Player) connection).getCurrentServer().orElse(null);
-		}
-
-		Preconditions.checkArgument(connection instanceof ServerConnection, "Connection must be ServerConnection", new Object[0]);
-		connection.sendPluginMessage(this.getChannel(), this.compileData());
-		VelocityControl.getLogger().debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + ((ServerConnection)connection).getServerInfo().getName() + " server."});
 	}
 
 	public void send(RegisteredServer server) {
 		server.sendPluginMessage(this.getChannel(), this.compileData());
-		VelocityControl.getLogger().debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server."});
+		VelocityControl.getLogger().debug("bungee", "Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server.");
 	}
 
 	public byte[] compileData() {

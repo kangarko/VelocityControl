@@ -11,6 +11,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.foundation.Common;
 import org.mineacademy.velocitycontrol.foundation.exception.EventHandledException;
+import org.mineacademy.velocitycontrol.foundation.model.JavaScriptExecutor;
 import org.mineacademy.velocitycontrol.foundation.model.Rule;
 import org.mineacademy.velocitycontrol.foundation.model.SimpleTime;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -40,13 +41,13 @@ public abstract class PlayerMessage extends Operator implements Rule {
 	 * order for the rule to apply
 	 */
 
-	private HashMap<String, String> requireSenderPermission;
+	private Map.Entry<String, String> requireSenderPermission;
 
 	/**
 	 * Permission required for receivers of the message of the rule
 	 */
 
-	private HashMap<String, String> requireReceiverPermission;
+	private Map.Entry<String, String> requireReceiverPermission;
 
 	/**
 	 * JavaScript boolean output required to be true for the rule to apply
@@ -232,12 +233,12 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			checkNotSet(this.requireSenderPermission, "require sender perm");
 			final String[] split = theRestThree.split(" ");
 
-			this.requireSenderPermission = new HashMap<>() {{ put(split[0], split.length > 1 ? Common.joinRange(1, split) : null); }};
+			this.requireSenderPermission = new AbstractMap.SimpleEntry<>(split[0], split.length > 1 ? Common.joinRange(1, split) : null);
 		} else if ("require receiver perm".equals(firstThreeParams) || "require receiver permission".equals(firstThreeParams)) {
 			checkNotSet(this.requireReceiverPermission, "require receiver perm");
 			final String[] split = theRestThree.split(" ");
 
-			this.requireReceiverPermission = new HashMap<>() {{ put(split[0], split.length > 1 ? Common.joinRange(1, split) : null); }};
+			this.requireReceiverPermission = new AbstractMap.SimpleEntry<>(split[0], split.length > 1 ? Common.joinRange(1, split) : null);
 		} else if ("require sender script".equals(firstThreeParams)) {
 			checkNotSet(this.requireSenderScript, "require sender script");
 
@@ -317,7 +318,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 	 */
 	@Override
 	public String toString() {
-		return "Player Message " + super.collectOptions().put(SerializedMap.of("Type", this.type)).toStringFormatted();
+		return "Player message " + super.collectOptions().put("Type", this.type).toString();
 	}
 
 	/* ------------------------------------------------------------------------------- */
@@ -612,7 +613,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			if (message == null)
 				return null;
 
-			return Replacer.replaceVariables(message, prepareVariables(operator));
+			return replaceVariables(message, prepareVariables(operator));
 		}
 		@Override
 		protected HashMap<String, String> prepareVariables(T operator) {

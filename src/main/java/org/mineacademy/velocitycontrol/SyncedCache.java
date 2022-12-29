@@ -1,7 +1,6 @@
 package org.mineacademy.velocitycontrol;
 
 import lombok.Getter;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.foundation.Common;
 import org.mineacademy.velocitycontrol.listener.OutgoingMessage;
 import org.mineacademy.velocitycontrol.listener.VelocityControlListener;
@@ -145,38 +144,8 @@ public final class SyncedCache {
 	 *
 	 * @return
 	 */
-	public String getNameOrNickColorless() {
-		return Common.stripColors(this.getNameOrNickColored());
-	}
-
-	/**
-	 * Return a dude's name or nick if set
-	 *
-	 * @return
-	 */
 	public String getNameOrNickColored() {
 		return Common.getOrDefaultStrict(this.nick, this.playerName);
-	}
-
-	/**
-	 * Return true if this dude is ignoring the other dude's unique id
-	 * Females not supported
-	 *
-	 * @param uniqueId
-	 * @return
-	 */
-	public boolean isIgnoringPlayer(UUID uniqueId) {
-		return this.ignoredPlayers.contains(uniqueId);
-	}
-
-	/**
-	 * Return the channel mode if player is in the given channel else null
-	 *
-	 * @param channelName
-	 * @return
-	 */
-	public ChannelMode getChannelMode(String channelName) {
-		return this.channels.get(channelName);
 	}
 
 	/**
@@ -198,15 +167,6 @@ public final class SyncedCache {
 	 */
 	public boolean isIgnoringPMs() {
 		return this.ignoringPMs;
-	}
-
-	/**
-	 * Return true if this dude is ignoring sound notifications
-	 *
-	 * @return
-	 */
-	public boolean isIgnoringSoundNotifications() {
-		return this.ignoringSoundNotify;
 	}
 
 	/**
@@ -243,110 +203,12 @@ public final class SyncedCache {
 	/* ------------------------------------------------------------------------------- */
 
 	/**
-	 * Return true if the given player is connected and synced on Velocity
-	 */
-	public static boolean isPlayerConnected(String playerName) {
-		synchronized (cacheMap) {
-			return cacheMap.containsKey(playerName);
-		}
-	}
-
-	/**
-	 * Return true should the given server name match a valid server we know of...
-	 */
-	public static boolean doesServerExist(String serverName) {
-		synchronized (cacheMap) {
-			for (final SyncedCache cache : cacheMap.values())
-				if (cache.getServerName().equalsIgnoreCase(serverName))
-					return true;
-
-			return false;
-		}
-	}
-
-	/**
 	 * Resolve a synced cache from the given player
 	 */
 
 	public static SyncedCache fromName(String playerName) {
 		synchronized (cacheMap) {
 			return cacheMap.get(playerName);
-		}
-	}
-
-	/**
-	 * Return the synced cache (or null) from the player name or nick
-	 *
-	 * @param nick
-	 * @return
-	 */
-	public static SyncedCache fromNick(String nick) {
-		synchronized (cacheMap) {
-			for (final SyncedCache cache : cacheMap.values()) {
-				String strippedNick = LegacyComponentSerializer.legacySection().deserialize(nick).content();
-				String strippedCacheNick = LegacyComponentSerializer.legacySection().deserialize(cache.getNick()).content();
-				if (cache.getPlayerName().equalsIgnoreCase(nick) || (cache.getNick() != null && strippedNick.equalsIgnoreCase(strippedCacheNick))) {
-					return cache;
-				}
-			}
-
-			return null;
-		}
-	}
-
-	/**
-	 * Return a set of all known servers on BungeeCord where players are on
-	 *
-	 * @return
-	 */
-	public static Set<String> getServers() {
-		synchronized (cacheMap) {
-			final Set<String> servers = new HashSet<>();
-
-			for (final SyncedCache cache : getCaches())
-				servers.add(cache.getServerName());
-
-			return servers;
-		}
-	}
-
-	/**
-	 * Return all caches stored in memory
-	 *
-	 * @return
-	 */
-	public static Collection<SyncedCache> getCaches() {
-		synchronized (cacheMap) {
-			return cacheMap.values();
-		}
-	}
-
-	/**
-	 * Return a list of all network player names
-	 *
-	 * @return
-	 */
-	public static Set<String> getPlayerNames() {
-		synchronized (cacheMap) {
-			final Set<String> names = new HashSet<>();
-
-			for (final SyncedCache cache : cacheMap.values()) {
-				names.add(cache.getNameOrNickColorless());
-				names.add(cache.getPlayerName());
-			}
-
-			return names;
-		}
-	}
-
-	public static Set<String> getJustNames() {
-		synchronized (cacheMap) {
-			final Set<String> names = new HashSet<>();
-
-			for (final SyncedCache cache : cacheMap.values())
-				names.add(cache.getPlayerName());
-
-			return names;
 		}
 	}
 
@@ -388,9 +250,6 @@ public final class SyncedCache {
 	 */
 	public static void upload(VelocityControlListener.SyncType syncType, HashMap<String, String> data) {
 		synchronized (cacheMap) {
-
-			final Set<String> players = new HashSet<>();
-
 			data.forEach((playerName, dataLine) -> {
 				final SyncedCache cache = cacheMap.get(playerName);
 

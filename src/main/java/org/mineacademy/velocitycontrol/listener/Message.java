@@ -104,9 +104,8 @@ abstract class Message {
 	 * This also ensures we are reading the correct data type (both primitives and wrappers
 	 * are supported).
 	 *
-	 * @param typeOf
-	 */
-	protected final void moveHead(Class<?> typeOf) {
+     */
+	protected final void moveHead() {
 		Preconditions.checkNotNull(serverName, "Server name not set!");
 		Preconditions.checkNotNull(serverName, "Server name not set!");
 		Preconditions.checkNotNull(action, "Action not set!");

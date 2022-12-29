@@ -11,17 +11,6 @@ public class VCException extends RuntimeException {
     /**
      * Create a new exception and logs it
      *
-     * @param t
-     */
-    public VCException(Throwable t) {
-        super(t);
-
-        Debugger.saveError(t);
-    }
-
-    /**
-     * Create a new exception and logs it
-     *
      * @param message
      */
     public VCException(String message) {
