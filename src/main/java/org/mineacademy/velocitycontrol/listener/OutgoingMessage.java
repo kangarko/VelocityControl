@@ -1,22 +1,18 @@
 package org.mineacademy.velocitycontrol.listener;
 
-
+import com.google.common.base.Preconditions;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.james090500.CoreFoundation.Valid;
-import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.debug.Debugger;
-import com.james090500.CoreFoundation.exception.FoException;
+import com.google.gson.Gson;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.exception.VCException;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class OutgoingMessage extends Message {
 	private final List<Object> queue;
@@ -47,8 +43,9 @@ public final class OutgoingMessage extends Message {
 
 	}
 
-	public void writeMap(SerializedMap map) {
-		write(map.toJson(), String.class);
+	public void writeMap(HashMap<String, UUID> map) {
+		Gson gson = new Gson();
+		write(gson.toJson(map), String.class);
 	}
 
 	public void writeBoolean(boolean bool) {
@@ -84,7 +81,7 @@ public final class OutgoingMessage extends Message {
 	}
 
 	private void write(Object object, Class<?> typeOf) {
-		Valid.checkNotNull(object, "Added object must not be null!");
+		Preconditions.checkNotNull(object, "Added object must not be null!");
 		this.moveHead(typeOf);
 		this.queue.add(object);
 	}
@@ -94,14 +91,14 @@ public final class OutgoingMessage extends Message {
 			connection = ((Player) connection).getCurrentServer().orElse(null);
 		}
 
-		Valid.checkBoolean(connection instanceof ServerConnection, "Connection must be ServerConnection", new Object[0]);
+		Preconditions.checkArgument(connection instanceof ServerConnection, "Connection must be ServerConnection", new Object[0]);
 		connection.sendPluginMessage(this.getChannel(), this.compileData());
-		Debugger.debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + ((ServerConnection)connection).getServerInfo().getName() + " server."});
+		VelocityControl.getLogger().debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + ((ServerConnection)connection).getServerInfo().getName() + " server."});
 	}
 
 	public void send(RegisteredServer server) {
 		server.sendPluginMessage(this.getChannel(), this.compileData());
-		Debugger.debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server."});
+		VelocityControl.getLogger().debug("bungee", new String[]{"Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server."});
 	}
 
 	public byte[] compileData() {
@@ -130,7 +127,7 @@ public final class OutgoingMessage extends Message {
 				out.writeUTF(object.toString());
 			} else {
 				if (!(object instanceof byte[])) {
-					throw new FoException("Unsupported write of " + object.getClass().getSimpleName() + " to channel " + this.getChannel() + " with action " + this.getAction().toString());
+					throw new VCException("Unsupported write of " + object.getClass().getSimpleName() + " to channel " + this.getChannel() + " with action " + this.getAction().toString());
 				}
 
 				out.write((byte[])object);

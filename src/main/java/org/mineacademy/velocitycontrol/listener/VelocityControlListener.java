@@ -1,8 +1,6 @@
 package org.mineacademy.velocitycontrol.listener;
 
-import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.collection.StrictMap;
-import com.james090500.CoreFoundation.debug.Debugger;
+import com.google.gson.Gson;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -13,7 +11,7 @@ import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -46,7 +44,7 @@ public final class VelocityControlListener {
     /**
      * The data that are being synced between servers
      */
-    private volatile StrictMap<SyncType, SerializedMap> clusteredData = new StrictMap<>();
+    private HashMap<SyncType, HashMap> clusteredData = new HashMap<>();
 
     public enum SyncType {
         SERVER,
@@ -74,18 +72,16 @@ public final class VelocityControlListener {
             // Upload downstream data here and redistribute over network
             synchronized (this.clusteredData) {
 
-                for (final Map.Entry<SyncType, SerializedMap> entry : this.clusteredData.entrySet()) {
-
-                    final SyncType syncType = entry.getKey();
-                    final SerializedMap data = entry.getValue();
+                Gson gson = new Gson();
+                this.clusteredData.forEach((syncType, hashMap) -> {
                     final OutgoingMessage message = new OutgoingMessage(ProxyPacket.PLAYERS_CLUSTER_DATA);
 
                     message.writeString(syncType.toString());
-                    message.writeString(data.toJson());
+                    message.writeString(gson.toJson(hashMap));
 
                     VelocityControl.broadcastPacket(message);
-                    SyncedCache.upload(syncType, data);
-                }
+                    SyncedCache.upload(syncType, hashMap);
+                });
 
                 this.clusteredData.clear();
             }
@@ -94,9 +90,6 @@ public final class VelocityControlListener {
         .schedule();
     }
 
-    /**
-     * @see org.mineacademy.bfo.bungee.BungeeListener#onMessageReceived(Connection, org.mineacademy.bfo.bungee.message.IncomingMessage)
-     */
     @Subscribe
     public void onMessageReceived(PluginMessageEvent event) {
         if (event.getIdentifier() != VelocityControl.CHANNEL) return;
@@ -110,15 +103,15 @@ public final class VelocityControlListener {
 
         } catch (final Throwable t) {
             t.printStackTrace();
-            /*VelocityControl.getLogger().error(
-                    Common.consoleLine(),
+            VelocityControl.getLogger().error(
+                    "!-----------------------------------------------------!",
                     "ERROR COMMUNICATING WITH CHATCONTROL",
-                    Common.consoleLine(),
+                    "!-----------------------------------------------------!",
                     "Ensure you are running latest version of",
-                    "both BungeeControl and ChatControl!",
+                    "both VelocityControl and ChatControl!",
                     "",
                     "Server: " + connection.getServerInfo().getName(),
-                    "Error: " + t.getClass().getSimpleName() + ": " + t.getMessage());*/
+                    "Error: " + t.getClass().getSimpleName() + ": " + t.getMessage());
         }
 
         //Set message has handles to avoid client spam/forwarding
@@ -146,12 +139,15 @@ public final class VelocityControlListener {
         if (packet == ProxyPacket.PLAYERS_CLUSTER_DATA) {
             synchronized (this.clusteredData) {
                 final SyncType syncType = SyncType.valueOf(message.readString());
-                final SerializedMap dataMap = message.readMap();
+                final HashMap dataMap = message.readMap();
 
-                final SerializedMap oldData = this.clusteredData.getOrDefault(syncType, new SerializedMap());
-                oldData.mergeFrom(dataMap);
-
-                this.clusteredData.override(syncType, oldData);
+                final HashMap oldData = this.clusteredData.getOrDefault(syncType, new HashMap());
+                dataMap.forEach((key, value) -> {
+                    if(key != null && value != null && !oldData.containsKey(key)) {
+                        oldData.put(key, value);
+                    }
+                });
+                this.clusteredData.put(syncType, oldData);
             }
         } else if (packet == ProxyPacket.FORWARD_COMMAND) {
             final String server = message.readString();
@@ -186,18 +182,18 @@ public final class VelocityControlListener {
             final RegisteredServer iteratedServer = server;
 
             if (iteratedServer.getPlayersConnected().isEmpty()) {
-                Debugger.debug("packet", "\tDid not send to '" + iteratedName + "', the server is empty");
+                VelocityControl.getLogger().debug("packet", "\tDid not send to '" + iteratedName + "', the server is empty");
 
                 continue;
             }
 
             if (!forceSelf && iteratedServer.getServerInfo().getAddress().equals(this.connection.getServerInfo().getAddress())) {
-                Debugger.debug("packet", "\tDid not send to '" + iteratedName + "', the server equals sender");
+                VelocityControl.getLogger().debug("packet", "\tDid not send to '" + iteratedName + "', the server equals sender");
 
                 continue;
             }
 
-            Debugger.debug("packet", "\tForwarded to '" + iteratedName + "'");
+            VelocityControl.getLogger().debug("packet", "\tForwarded to '" + iteratedName + "'");
             iteratedServer.sendPluginMessage(VelocityControl.CHANNEL, data);
         }
     }

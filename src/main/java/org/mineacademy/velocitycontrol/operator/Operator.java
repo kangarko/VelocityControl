@@ -139,7 +139,7 @@ public abstract class Operator implements Rule {
 
 		final List<String> theRestSplit = splitVertically(theRest);
 		if ("expires".equals(args[0])) {
-			Valid.checkBoolean(this.expires == -1, "Operator 'expires' already defined on " + this);
+			Preconditions.checkArgument(this.expires == -1, "Operator 'expires' already defined on " + this);
 
 			String date = Common.joinRange(1, args);
 
@@ -189,7 +189,7 @@ public abstract class Operator implements Rule {
 
 		else if ("then discord".equals(param)) {
 			final String[] split = theRest.split(" ");
-			Valid.checkBoolean(split.length > 1, "wrong then discord syntax! Usage: <channel> <message>");
+			Preconditions.checkArgument(split.length > 1, "wrong then discord syntax! Usage: <channel> <message>");
 
 			final String channel = split[0];
 			final String message = Common.joinRange(1, split);
@@ -199,7 +199,7 @@ public abstract class Operator implements Rule {
 
 		else if ("then write".equals(param)) {
 			final String[] split = theRest.split(" ");
-			Valid.checkBoolean(split.length > 1, "wrong 'then log' syntax! Usage: <file (without spaces)> <message>");
+			Preconditions.checkArgument(split.length > 1, "wrong 'then log' syntax! Usage: <file (without spaces)> <message>");
 
 			final String file = split[0];
 			final String message = Common.joinRange(1, split);
@@ -211,50 +211,50 @@ public abstract class Operator implements Rule {
 			this.warnMessages.put(UUID.randomUUID(), theRest);
 
 		} else if ("then abort".equals(param)) {
-			Valid.checkBoolean(this.abort == false, "then abort already used on " + this);
+			Preconditions.checkArgument(this.abort == false, "then abort already used on " + this);
 
 			this.abort = true;
 		}
 
 		else if ("then deny".equals(param)) {
 			if ("silently".equals(theRest)) {
-				Valid.checkBoolean(this.cancelMessageSilently == false, "then deny silently already used on " + this);
+				Preconditions.checkArgument(this.cancelMessageSilently == false, "then deny silently already used on " + this);
 
 				this.cancelMessageSilently = true;
 
 			} else {
-				Valid.checkBoolean(this.cancelMessage == false, "then deny already used on " + this);
+				Preconditions.checkArgument(this.cancelMessage == false, "then deny already used on " + this);
 
 				this.cancelMessage = true;
 			}
 		}
 
 		else if ("require playedbefore".equals(param)) {
-			Valid.checkBoolean(this.requirePlayedBefore == false, "require playedbefore already used on " + this);
+			Preconditions.checkArgument(this.requirePlayedBefore == false, "require playedbefore already used on " + this);
 
 			this.requirePlayedBefore = true;
 		}
 
 		else if ("ignore playedbefore".equals(param)) {
-			Valid.checkBoolean(this.ignorePlayedBefore == false, "ignore playedbefore already used on " + this);
+			Preconditions.checkArgument(this.ignorePlayedBefore == false, "ignore playedbefore already used on " + this);
 
 			this.ignorePlayedBefore = true;
 		}
 
 		else if ("dont log".equals(param)) {
-			Valid.checkBoolean(this.ignoreLogging == false, "dont log already used on " + this);
+			Preconditions.checkArgument(this.ignoreLogging == false, "dont log already used on " + this);
 
 			this.ignoreLogging = true;
 		}
 
 		else if ("dont verbose".equals(param)) {
-			Valid.checkBoolean(this.ignoreVerbose == false, "dont verbose already used on " + this);
+			Preconditions.checkArgument(this.ignoreVerbose == false, "dont verbose already used on " + this);
 
 			this.ignoreVerbose = true;
 		}
 
 		else if ("disabled".equals(args[0])) {
-			Valid.checkBoolean(!this.disabled, "'disabled' already used on " + this);
+			Preconditions.checkArgument(!this.disabled, "'disabled' already used on " + this);
 
 			this.disabled = true;
 		}
@@ -262,7 +262,7 @@ public abstract class Operator implements Rule {
 		else {
 			final boolean success = onParse(param, theRest, args);
 
-			Valid.checkBoolean(success, "Unrecognized operator '" + String.join(" ", args) + "' found in " + this);
+			Preconditions.checkArgument(success, "Unrecognized operator '" + String.join(" ", args) + "' found in " + this);
 		}
 
 		return true;
@@ -285,7 +285,7 @@ public abstract class Operator implements Rule {
 	 * @param type
 	 */
 	protected final void checkNotSet(Object value, String type) {
-		Valid.checkBoolean(value == null, "Operator '" + type + "' already defined on " + this);
+		Preconditions.checkArgument(value == null, "Operator '" + type + "' already defined on " + this);
 	}
 
 	/**

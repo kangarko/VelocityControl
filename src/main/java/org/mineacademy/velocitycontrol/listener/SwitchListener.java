@@ -1,7 +1,6 @@
 package org.mineacademy.velocitycontrol.listener;
 
 import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.debug.Debugger;
 import com.james090500.CoreFoundation.model.Tuple;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
@@ -13,6 +12,7 @@ import com.velocitypowered.api.proxy.server.ServerInfo;
 import lombok.NonNull;
 import org.mineacademy.velocitycontrol.ServerCache;
 import org.mineacademy.velocitycontrol.SyncedCache;
+import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -57,7 +57,7 @@ public final class SwitchListener {
 			final String toServer = Settings.getServerNameAlias(event.getServer());
 
 			if (!isSilent(toServer)) {
-				Debugger.debug("player-message", "Detected " + player.getUsername() + " join to " + toServer + ", waiting for server data..");
+				VelocityControl.getLogger().debug("player-message", "Detected " + player.getUsername() + " join to " + toServer + ", waiting for server data..");
 				pendingMessages.put(player.getUniqueId(), new Tuple<>(PlayerMessage.Type.JOIN, SerializedMap.of("server", toServer)));
 			}
 		}
@@ -141,13 +141,13 @@ public final class SwitchListener {
 			final SyncedCache cache = SyncedCache.fromName(player.getUsername());
 
 			if (!cache.isVanished() || player.hasPermission("chatcontrol.bypass.reach")) {
-				//Debugger.debug("player-message", "Broadcast " + type + " message for " + player.getName() + " with variables " + variables);
+				//VelocityControl.getLogger().debug("player-message", "Broadcast " + type + " message for " + player.getName() + " with variables " + variables);
 				PlayerMessages.broadcast(type, player, variables);
 			} //else
-				//Debugger.debug("player-message", "Failed sending " + type + " message for " + player.getName() + ", vanished ? " + cache.isVanished() + ", has bypass reach perm ? " + player.hasPermission("chatcontrol.bypass.reach"));
+				//VelocityControl.getLogger().debug("player-message", "Failed sending " + type + " message for " + player.getName() + ", vanished ? " + cache.isVanished() + ", has bypass reach perm ? " + player.hasPermission("chatcontrol.bypass.reach"));
 		}
 
 		//else
-			//Debugger.debug("player-message", "Failed finding pending join/switch message for " + player.getName() + ", quitting..");
+			//VelocityControl.getLogger().debug("player-message", "Failed finding pending join/switch message for " + player.getName() + ", quitting..");
 	}
 }

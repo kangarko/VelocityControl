@@ -1,6 +1,6 @@
 package org.mineacademy.velocitycontrol.listener;
 
-import com.james090500.CoreFoundation.Valid;
+import com.google.common.base.Preconditions;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -63,25 +63,25 @@ abstract class Message {
 
 	/**
 	 * Set the server name for this message, reason it is here:
-	 * cannot read in the constructor in {@link org.mineacademy.bfo.bungee.message.OutgoingMessage}
+	 * cannot read in the constructor in {@link org.mineacademy.velocitycontrol.listener.OutgoingMessage}
 	 *
 	 * @param serverName
 	 */
 	protected final void setServerName(String serverName) {
-		Valid.checkBoolean(this.serverName == null, "Server name already set");
-		Valid.checkNotNull(serverName, "Server name cannot be null!");
+		Preconditions.checkArgument(this.serverName == null, "Server name already set");
+		Preconditions.checkNotNull(serverName, "Server name cannot be null!");
 
 		this.serverName = serverName;
 	}
 
 	/**
 	 * Set the action head for this message, reason it is here:
-	 * static access in {@link org.mineacademy.bfo.bungee.message.OutgoingMessage
+	 * static access in {@link org.mineacademy.velocitycontrol.listener.OutgoingMessage}
 	 */
 	protected final void setAction(String actionName) {
 		final ProxyPacket action = ProxyPacket.getByName(actionName);
 
-		Valid.checkNotNull(action, "Unknown action named: " + actionName + ".");
+		Preconditions.checkNotNull(action, "Unknown action named: " + actionName + ".");
 		setAction(action);
 	}
 
@@ -92,7 +92,7 @@ abstract class Message {
 	 * @param action
 	 */
 	protected final void setAction(ProxyPacket action) {
-		Valid.checkBoolean(this.action == null, "Action already set");
+		Preconditions.checkArgument(this.action == null, "Action already set");
 
 		this.action = action;
 	}
@@ -107,11 +107,12 @@ abstract class Message {
 	 * @param typeOf
 	 */
 	protected final void moveHead(Class<?> typeOf) {
-		Valid.checkNotNull(serverName, "Server name not set!");
-		Valid.checkNotNull(action, "Action not set!");
+		Preconditions.checkNotNull(serverName, "Server name not set!");
+		Preconditions.checkNotNull(serverName, "Server name not set!");
+		Preconditions.checkNotNull(action, "Action not set!");
 
 		final Class<?>[] content = action.getContent();
-		Valid.checkBoolean(actionHead < content.length, "Head out of bounds! Max data size for " + action.name() + " is " + content.length);
+		Preconditions.checkArgument(actionHead < content.length, "Head out of bounds! Max data size for " + action.name() + " is " + content.length);
 
 		actionHead++;
 	}

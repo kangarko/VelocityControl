@@ -2,9 +2,10 @@ package org.mineacademy.velocitycontrol.listener;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import com.james090500.CoreFoundation.collection.SerializedMap;
+import com.google.gson.Gson;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
 import java.util.UUID;
 
 public final class IncomingMessage extends Message {
@@ -27,8 +28,9 @@ public final class IncomingMessage extends Message {
         return UUID.fromString(this.input.readUTF());
     }
 
-    public SerializedMap readMap() {
-        return SerializedMap.fromJson(this.readString());
+    public HashMap readMap() {
+        Gson gson = new Gson();
+        return gson.fromJson(this.readString(), HashMap.class);
     }
 
     public String readString() {

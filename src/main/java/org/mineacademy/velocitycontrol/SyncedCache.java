@@ -1,10 +1,8 @@
 package org.mineacademy.velocitycontrol;
 
-import com.james090500.CoreFoundation.Valid;
-import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.debug.Debugger;
 import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.listener.OutgoingMessage;
 import org.mineacademy.velocitycontrol.listener.VelocityControlListener;
 import org.mineacademy.velocitycontrol.model.ChannelMode;
@@ -216,19 +214,20 @@ public final class SyncedCache {
 	 *
 	 * @return
 	 */
-	public SerializedMap toVariables() {
-		return SerializedMap.ofArray(
-				"player_name", this.getPlayerName(),
-				"name", this.getPlayerName(),
-				"player_nick", this.getNameOrNickColored(),
-				"nick", this.getNameOrNickColored(),
-				"player_group", this.getGroup(),
-				"player_prefix", this.getPrefix(),
-				"player_server", this.getServerName(),
-				"player_afk", this.isAfk() ? "true" : "false",
-				"player_ignoring_pms", this.isIgnoringPMs() ? "true" : "false",
-				"player_ignoring_sound_notifications", this.isIgnoringSoundNotify() ? "true" : "false",
-				"player_vanished", this.isVanished() ? "true" : "false");
+	public HashMap<String, String> toVariables() {
+		return new HashMap<>() {{
+			put("player_name", getPlayerName());
+			put("name", getPlayerName());
+			put("player_nick", getNameOrNickColored());
+			put("nick", getNameOrNickColored());
+			put("player_group", getGroup());
+			put("player_prefix", getPrefix());
+			put("player_server", getServerName());
+			put("player_afk", isAfk() ? "true" : "false");
+			put("player_ignoring_pms", isIgnoringPMs() ? "true" : "false");
+			put("player_ignoring_sound_notifications", isIgnoringSoundNotify() ? "true" : "false");
+			put("player_vanished", isVanished() ? "true" : "false"));
+		}};
 	}
 
 	/**
@@ -283,9 +282,13 @@ public final class SyncedCache {
 	 */
 	public static SyncedCache fromNick(String nick) {
 		synchronized (cacheMap) {
-			for (final SyncedCache cache : cacheMap.values())
-				if (cache.getPlayerName().equalsIgnoreCase(nick) || (cache.getNick() != null && Valid.colorlessEquals(nick, cache.getNick())))
+			for (final SyncedCache cache : cacheMap.values()) {
+				String strippedNick = LegacyComponentSerializer.legacySection().deserialize(nick).content();
+				String strippedCacheNick = LegacyComponentSerializer.legacySection().deserialize(cache.getNick()).content();
+				if (cache.getPlayerName().equalsIgnoreCase(nick) || (cache.getNick() != null && strippedNick.equalsIgnoreCase(strippedCacheNick))) {
 					return cache;
+				}
+			}
 
 			return null;
 		}
@@ -352,10 +355,10 @@ public final class SyncedCache {
 	 */
 	public static void updateForOnlinePlayers() {
 		synchronized (cacheMap) {
-			final SerializedMap onlinePlayers = new SerializedMap();
+			final HashMap<String, UUID> onlinePlayers = new HashMap<>();
 
 			// Add non-cached players
-			for (final Player player : VelocityControl.getServer().getAllPlayers()) {
+			VelocityControl.getServer().getAllPlayers().forEach(player -> {
 				final String playerName = player.getUsername();
 				final UUID uniqueId = player.getUniqueId();
 
@@ -363,17 +366,13 @@ public final class SyncedCache {
 					cacheMap.put(playerName, new SyncedCache(playerName, uniqueId));
 
 				onlinePlayers.put(playerName, uniqueId);
-			}
+			});
 
-			// Remove disconnected players
-			for (final Iterator<Map.Entry<String, SyncedCache>> it = cacheMap.entrySet().iterator(); it.hasNext();) {
-				final Map.Entry<String, SyncedCache> entry = it.next();
-				final String playerName = entry.getKey();
-
+			cacheMap.forEach((playerName, syncedCache) -> {
 				//TODO possible race condition if player removed before leave message?
 				if (!onlinePlayers.containsKey(playerName))
-					it.remove();
-			}
+					cacheMap.remove(playerName);
+			});
 
 			final OutgoingMessage message = new OutgoingMessage(ProxyPacket.PLAYERS_CLUSTER_HEADER);
 			message.writeMap(onlinePlayers);
@@ -387,22 +386,20 @@ public final class SyncedCache {
 	 * @param syncType
 	 * @param data
 	 */
-	public static void upload(VelocityControlListener.SyncType syncType, SerializedMap data) {
+	public static void upload(VelocityControlListener.SyncType syncType, HashMap<String, String> data) {
 		synchronized (cacheMap) {
 
 			final Set<String> players = new HashSet<>();
 
-			for (final Map.Entry<String, Object> entry : data.entrySet()) {
-				final String playerName = entry.getKey();
-				final String dataLine = entry.getValue().toString();
+			data.forEach((playerName, dataLine) -> {
 				final SyncedCache cache = cacheMap.get(playerName);
 
 				if (cache != null) {
-					Debugger.print("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
+					VelocityControl.getLogger().info("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
 
 					cache.loadData(dataLine);
 				}
-			}
+			});
 		}
 	}
 

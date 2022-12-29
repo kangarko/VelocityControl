@@ -1,7 +1,5 @@
 package org.mineacademy.velocitycontrol.settings;
 
-import com.james090500.CoreFoundation.collection.StrictMap;
-import com.james090500.CoreFoundation.model.IsInList;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import org.mineacademy.velocitycontrol.VelocityControl;
@@ -12,6 +10,7 @@ import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -85,7 +84,7 @@ public final class Settings {
 	 * Settings for tab filter
 	 */
 	public static class TabComplete {
-		public StrictMap<String, IsInList<String>> Filter_Arguments;
+		public HashMap<String, String[]> Filter_Arguments;
 	}
 
 	/**

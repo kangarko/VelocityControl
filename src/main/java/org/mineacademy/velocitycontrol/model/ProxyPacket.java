@@ -1,8 +1,8 @@
 package org.mineacademy.velocitycontrol.model;
 
-import com.james090500.CoreFoundation.collection.SerializedMap;
 import lombok.Getter;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 /**
@@ -158,7 +158,7 @@ public enum ProxyPacket {
 	/**
 	 * Sync of data between BungeeCord servers (name-uuid map)
 	 */
-	PLAYERS_CLUSTER_HEADER(SerializedMap.class /*name-uuid map*/),
+	PLAYERS_CLUSTER_HEADER(HashMap.class /*name-uuid map*/),
 
 	/**
 	 * Sync of data between servers using BungeeCord

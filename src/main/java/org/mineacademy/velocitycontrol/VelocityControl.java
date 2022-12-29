@@ -96,6 +96,11 @@ public final class VelocityControl {
 	/* Methods */
 	/* ------------------------------------------------------------------------------- */
 
+	public static void debug(String a, String b) {
+		if(Settings.getSettings().)
+		VelocityControl.getLogger().info("[" + a + "] " + b);
+	}
+
 	/**
 	 * Return all servers on the network or Redis
 	 *
