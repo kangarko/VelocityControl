@@ -1,6 +1,7 @@
 package org.mineacademy.velocitycontrol;
 
 import com.google.inject.Inject;
+import com.james090500.CoreFoundation.debug.Debugger;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -12,6 +13,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.command.ReloadCommand;
 import org.mineacademy.velocitycontrol.listener.*;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
@@ -24,7 +26,7 @@ import java.util.Collection;
 /**
 * The main VelocityControl Red plugin class.
 */
-@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.0", authors = {"kangarko", "relavis", "james090500"})
+@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.1", authors = {"kangarko", "relavis", "james090500"})
 public final class VelocityControl {
 	@Getter
 	private static VelocityControl instance;
@@ -50,10 +52,10 @@ public final class VelocityControl {
 	private VelocityControlListener velocityControl;
 
 	@Inject
-	public VelocityControl(final ProxyServer proxyServer, final Logger _logger, final @DataDirectory Path dataDirectory) {
-		server = proxyServer;
-		folder = dataDirectory;
-		logger = _logger;
+	public VelocityControl(final ProxyServer proxyServer, Logger logger, final @DataDirectory Path dataDirectory) {
+		this.server = proxyServer;
+		this.folder = dataDirectory;
+		this.logger = logger;
 		instance = this;
 	}
 
@@ -68,8 +70,12 @@ public final class VelocityControl {
 	}
 
 	public void onPluginStart() {
+		long time = System.currentTimeMillis();
 		ServerCache.getInstance();
 		Settings.load();
+
+		Debugger.setDebugAll(Settings.getSettings().Debug);
+
 		velocityControl = new VelocityControlListener();
 		server.getChannelRegistrar().register(CHANNEL);
 		server.getEventManager().register(this, new SwitchListener());
@@ -81,6 +87,11 @@ public final class VelocityControl {
 
 		CommandMeta commandMeta = server.getCommandManager().metaBuilder("vcreload").build();
 		server.getCommandManager().register(commandMeta, new ReloadCommand());
+
+		time = System.currentTimeMillis() - time;
+		getServer().getConsoleCommandSource().sendMessage(
+				LegacyComponentSerializer.legacyAmpersand().deserialize("&a[VelocityControl] Loaded in " + time + "ms!")
+		);
 	}
 
 	protected void onReloadablesStart() {

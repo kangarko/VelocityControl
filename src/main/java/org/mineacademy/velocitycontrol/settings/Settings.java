@@ -47,9 +47,9 @@ public final class Settings {
 			}
 
 			try (Reader reader = new FileReader(file)) {
-				//LoaderOptions loaderOptions = new LoaderOptions();
-				//loaderOptions.setEnumCaseSensitive(false); When SnakeYAML updates!
 				CustomClassLoaderConstructor customClassLoaderConstructor = new CustomClassLoaderConstructor(SettingsFile.class.getClassLoader());
+//				LoaderOptions loaderOptions = new LoaderOptions();
+//				customClassLoaderConstructor.setEnumCaseSensitive(false); When SnakeYAML updates!
 				settings = new Yaml(customClassLoaderConstructor).loadAs(reader, SettingsFile.class);
 			}
 		} catch (IOException e) {
@@ -67,6 +67,7 @@ public final class Settings {
 		public ChatForwarding Chat_Forwarding;
 		public Clusters Clusters;
 		public Spy Spy;
+		public boolean Debug;
 	}
 
 	/**
