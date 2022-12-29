@@ -46,7 +46,20 @@ public final class VelocityControlListener {
      */
     private HashMap<SyncType, HashMap> clusteredData = new HashMap<>();
 
+    /**
+     * Used by packets but appear unused! Do not remove as I found out.
+     */
     public enum SyncType {
+        SERVER,
+        NICK,
+        VANISH,
+        AFK,
+        IGNORE,
+        IGNORE_PMS,
+        IGNORE_SOUND_NOTIFY,
+        CHANNELS,
+        VAULT,
+        PACK_LOADED
     }
 
     /**

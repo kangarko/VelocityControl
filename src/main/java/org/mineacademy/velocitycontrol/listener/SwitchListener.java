@@ -56,7 +56,7 @@ public final class SwitchListener {
 
 			if (!isSilent(toServer)) {
 				VelocityControl.getLogger().debug("player-message", "Detected " + player.getUsername() + " join to " + toServer + ", waiting for server data..");
-				pendingMessages.put(player.getUniqueId(), (HashMap<PlayerMessage.Type, HashMap<String, String>>) Map.of(PlayerMessage.Type.JOIN, (HashMap<String, String>) Map.of("server", toServer)));
+				pendingMessages.put(player.getUniqueId(), new HashMap<>() {{ put(PlayerMessage.Type.JOIN, new HashMap<>() {{ put("server", toServer); }}); }});
 			}
 		}
 	}
@@ -78,7 +78,7 @@ public final class SwitchListener {
 			final String toServer = Settings.getServerNameAlias(currentServer);
 
 			if (!isSilent(fromServer)) {
-				pendingMessages.put(player.getUniqueId(), (HashMap<PlayerMessage.Type, HashMap<String, String>>) Map.of(PlayerMessage.Type.SWITCH, (HashMap<String, String>) Map.of("from_server", fromServer, "to_server", toServer)));
+				pendingMessages.put(player.getUniqueId(), new HashMap<>() {{ put(PlayerMessage.Type.SWITCH, new HashMap<>() {{ put("from_server", fromServer); put("to_server", toServer); }}); }});
 			}
 		}
 	}
@@ -95,7 +95,7 @@ public final class SwitchListener {
 			final SyncedCache synced = SyncedCache.fromName(playerName);
 
 			if (synced != null && !synced.isVanished() && !isSilent(fromServer)) {
-				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, (HashMap<String, String>) Map.of("server", fromServer));
+				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, new HashMap<>() {{ put("server", fromServer); }});
 
 				if (!cache.isPlayerRegistered(player)) {
 					cache.registerPlayer(player);

@@ -230,11 +230,13 @@ public final class SyncedCache {
 				onlinePlayers.put(playerName, uniqueId);
 			});
 
-			cacheMap.forEach((playerName, syncedCache) -> {
-				//TODO possible race condition if player removed before leave message?
-				if (!onlinePlayers.containsKey(playerName))
-					cacheMap.remove(playerName);
-			});
+			Iterator<Map.Entry<String, SyncedCache>> cacheMapIterator = cacheMap.entrySet().iterator();
+			while(cacheMapIterator.hasNext()) {
+				Map.Entry<String, SyncedCache> entry = cacheMapIterator.next();
+				if(!onlinePlayers.containsKey(entry.getKey())) {
+					cacheMapIterator.remove();
+				}
+			}
 
 			final OutgoingMessage message = new OutgoingMessage(ProxyPacket.PLAYERS_CLUSTER_HEADER);
 			message.writeMap(onlinePlayers);

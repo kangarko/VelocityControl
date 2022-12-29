@@ -318,7 +318,8 @@ public abstract class PlayerMessage extends Operator implements Rule {
 	 */
 	@Override
 	public String toString() {
-		return "Player message " + super.collectOptions().put("Type", this.type).toString();
+		super.collectOptions().put("Type", this.type);
+		return "Player message " + this.type.toString();
 	}
 
 	/* ------------------------------------------------------------------------------- */
