@@ -11,7 +11,6 @@ import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.foundation.Common;
 import org.mineacademy.velocitycontrol.foundation.FileUtil;
 import org.mineacademy.velocitycontrol.foundation.exception.EventHandledException;
-import org.mineacademy.velocitycontrol.foundation.exception.RegexTimeoutException;
 import org.mineacademy.velocitycontrol.foundation.model.Rule;
 import org.mineacademy.velocitycontrol.foundation.model.SimpleTime;
 
@@ -21,6 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,7 +42,7 @@ public abstract class Operator implements Rule {
 	/**
 	 * The delay between the next time this rule can be fired up, with optional warning message
 	 */
-	private HashMap<SimpleTime, String> delay;
+	private Map.Entry<SimpleTime, String> delay;
 
 	/**
 	 * List of commands to run as player when rule matches
@@ -164,9 +165,7 @@ public abstract class Operator implements Rule {
 				final SimpleTime time = SimpleTime.from(Common.joinRange(1, 3, args));
 				final String message = args.length > 2 ? Common.joinRange(3, args) : null;
 
-				this.delay = new HashMap<>() {{
-					put(time, message);
-				}};
+				this.delay = new AbstractMap.SimpleEntry<>(time, message);
 
 			} catch (final Throwable ex) {
 				Common.throwError(ex, "Syntax error in 'delay' operator. Valid: <amount> <unit> (1 second, 2 minutes). Got: " + String.join(" ", args));
@@ -397,7 +396,7 @@ public abstract class Operator implements Rule {
 				} catch (final EventHandledException ex) {
 					throw ex; // send upstream
 
-				} catch (final RegexTimeoutException ex) {
+				} catch (final RuntimeException ex) {
 					ex.printStackTrace();
 
 				} catch (final Throwable t) {
@@ -500,7 +499,59 @@ public abstract class Operator implements Rule {
 			if (message == null)
 				return null;
 
-			return Replacer.replaceVariables(message, prepareVariables(operator));
+			return replaceVariables(message, prepareVariables(operator));
+		}
+
+		/*
+		 * Replace all kinds of check variables
+		 */
+		protected String replaceVariables(String message, HashMap<String, String> variables) {
+			if (message == null)
+				return null;
+
+			if ("".equals(message))
+				return "";
+
+			final Matcher matcher = Pattern.compile("[{]([^{}]+)[}]").matcher(message);
+
+			while (matcher.find()) {
+				String variable = matcher.group(1);
+
+				boolean frontSpace = false;
+				boolean backSpace = false;
+
+				if (variable.startsWith("+")) {
+					variable = variable.substring(1);
+
+					frontSpace = true;
+				}
+
+				if (variable.endsWith("+")) {
+					variable = variable.substring(0, variable.length() - 1);
+
+					backSpace = true;
+				}
+
+				String value = null;
+				for (final Map.Entry<String, String> entry : variables.entrySet()) {
+					String variableKey = entry.getKey();
+
+					variableKey = variableKey.startsWith("{") ? variableKey.substring(1) : variableKey;
+					variableKey = variableKey.endsWith("}") ? variableKey.substring(0, variableKey.length() - 1) : variableKey;
+
+					if (variableKey.equals(variable))
+						value = entry.getValue() == null ? "null" : entry.getValue().toString();
+				}
+
+				if (value != null) {
+					final boolean emptyColorless = Common.stripColors(value).isEmpty();
+					value = value.isEmpty() ? "" : (frontSpace && !emptyColorless ? " " : "") + value + (backSpace && !emptyColorless ? " " : "");
+
+					message = message.replace(matcher.group(), value);
+				}
+			}
+
+			return message;
 		}
 
 		/**

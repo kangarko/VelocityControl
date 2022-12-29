@@ -47,16 +47,6 @@ public final class VelocityControlListener {
     private HashMap<SyncType, HashMap> clusteredData = new HashMap<>();
 
     public enum SyncType {
-        SERVER,
-        NICK,
-        VANISH,
-        AFK,
-        IGNORE,
-        IGNORE_PMS,
-        IGNORE_SOUND_NOTIFY,
-        CHANNELS,
-        VAULT,
-        PACK_LOADED
     }
 
     /**
@@ -99,7 +89,7 @@ public final class VelocityControlListener {
         IncomingMessage message = new IncomingMessage(event.getData());
 
         try {
-            handle(connection, message);
+            handle(message);
 
         } catch (final Throwable t) {
             t.printStackTrace();
@@ -121,7 +111,7 @@ public final class VelocityControlListener {
     /*
      * Handle and process incoming packet
      */
-    private void handle(ServerConnection connection, IncomingMessage message) {
+    private void handle(IncomingMessage message) {
         // Get the raw data
         final byte[] data = message.getData();
 

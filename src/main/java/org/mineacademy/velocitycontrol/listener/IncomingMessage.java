@@ -24,7 +24,7 @@ public final class IncomingMessage extends Message {
     }
 
     public UUID readUUID() {
-        this.moveHead(String.class);
+        this.moveHead();
         return UUID.fromString(this.input.readUTF());
     }
 
@@ -34,7 +34,7 @@ public final class IncomingMessage extends Message {
     }
 
     public String readString() {
-        this.moveHead(String.class);
+        this.moveHead();
         return this.input.readUTF();
     }
 

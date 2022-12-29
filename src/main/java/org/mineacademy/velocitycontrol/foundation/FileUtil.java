@@ -27,44 +27,6 @@ import java.util.function.Function;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FileUtil {
 
-    /**
-     * Return the name of the file from the given path, stripping
-     * any extension and folders.
-     *
-     * Example: classes/Archer.yml will only return Archer
-     *
-     * @param file
-     * @return
-     */
-    public static String getFileName(File file) {
-        return getFileName(file.getName());
-    }
-
-    /**
-     * Return the name of the file from the given path, stripping
-     * any extension and folders.
-     *
-     * Example: classes/Archer.yml will only return Archer
-     *
-     * @param path
-     * @return
-     */
-    public static String getFileName(String path) {
-        Preconditions.checkArgument(path != null && !path.isEmpty(), "The given path must not be empty!");
-
-        int pos = path.lastIndexOf("/");
-
-        if (pos > 0)
-            path = path.substring(pos + 1, path.length());
-
-        pos = path.lastIndexOf(".");
-
-        if (pos > 0)
-            path = path.substring(0, pos);
-
-        return path;
-    }
-
     // ----------------------------------------------------------------------------------------------------
     // Getting files
     // ----------------------------------------------------------------------------------------------------

@@ -17,7 +17,6 @@ public final class PlayerListener {
      */
     @Subscribe
     public void onJoin(final ServerConnectedEvent event) {
-        final Player player = event.getPlayer();
         final RegisteredServer server = event.getServer();
 
         // Prepare packet
@@ -26,6 +25,6 @@ public final class PlayerListener {
         message.writeString(server.getServerInfo().getName());
         message.writeString(Settings.getServerNameAlias(server));
 
-        VelocityControl.forwardMessage(message, player);
+        VelocityControl.forwardMessage(message);
     }
 }

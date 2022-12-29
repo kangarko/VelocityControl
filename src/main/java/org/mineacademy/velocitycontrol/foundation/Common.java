@@ -16,10 +16,7 @@ import org.mineacademy.velocitycontrol.foundation.exception.VCException;
 
 import java.text.DecimalFormat;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,10 +76,6 @@ public final class Common {
 	private static final String logPrefix = "[VelocityControl]";
 
 	// ------------------------------------------------------------------------------------------------------------
-	// Broadcasting
-	// ------------------------------------------------------------------------------------------------------------
-
-	// ------------------------------------------------------------------------------------------------------------
 	// Messaging
 	// ------------------------------------------------------------------------------------------------------------
 
@@ -108,16 +101,6 @@ public final class Common {
 			message = message.substring(0, message.length() - 1);
 
 		return removeFirstSpaces(message);
-	}
-
-	/**
-	 * Replaces the {@link LegacyComponentSerializer#SECTION_CHAR} colors with & letters
-	 *
-	 * @param message
-	 * @return
-	 */
-	public static String revertColorizing(final String message) {
-		return message.replaceAll("(?i)" + LegacyComponentSerializer.SECTION_CHAR + "([0-9a-fk-or])", "&$1");
 	}
 
 	/**
@@ -448,6 +431,30 @@ public final class Common {
 	// Converting and retyping
 	// ------------------------------------------------------------------------------------------------------------
 
+	/**
+	 * Return the corresponding major Java version such as 8 for Java 1.8, or 11 for Java 11.
+	 *
+	 * @return
+	 */
+	public static int getJavaVersion() {
+		String version = System.getProperty("java.version");
+
+		if (version.startsWith("1."))
+			version = version.substring(2, 3);
+
+		else {
+			final int dot = version.indexOf(".");
+
+			if (dot != -1)
+				version = version.substring(0, dot);
+		}
+
+		if (version.contains("-"))
+			version = version.split("\\-")[0];
+
+		return Integer.parseInt(version);
+	}
+
 	// ------------------------------------------------------------------------------------------------------------
 	// Misc message handling
 	// ------------------------------------------------------------------------------------------------------------
@@ -488,6 +495,21 @@ public final class Common {
 	 */
 	public static <T> T getOrDefaultStrict(final T value, final T def) {
 		return value != null ? value : def;
+	}
+
+	/**
+	 * Create a new array list that is mutable
+	 *
+	 * @param <T>
+	 * @param keys
+	 * @return
+	 */
+	public static <T> List<T> newList(final T... keys) {
+		final List<T> list = new ArrayList<>();
+
+		Collections.addAll(list, keys);
+
+		return list;
 	}
 
 	// ------------------------------------------------------------------------------------------------------------
