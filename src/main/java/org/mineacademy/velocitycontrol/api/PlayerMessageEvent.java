@@ -1,12 +1,13 @@
 package org.mineacademy.velocitycontrol.api;
 
-import com.james090500.CoreFoundation.collection.SerializedMap;
 import com.velocitypowered.api.event.ResultedEvent;
 import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.mineacademy.velocitycontrol.operator.Operator.OperatorCheck;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
+
+import java.util.HashMap;
 
 /**
  * An event that is executed when a player joins a channel.
@@ -34,7 +35,7 @@ public final class PlayerMessageEvent implements ResultedEvent<ResultedEvent.Gen
 	 * The variables such as {to_server} etc. used for the event
 	 */
 
-	private final SerializedMap variables;
+	private final HashMap<String, String> variables;
 
 	/**
 	 * Enable joining?

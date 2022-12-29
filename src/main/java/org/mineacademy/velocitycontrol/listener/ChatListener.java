@@ -1,7 +1,5 @@
 package org.mineacademy.velocitycontrol.listener;
 
-import com.james090500.CoreFoundation.Common;
-import com.james090500.CoreFoundation.model.IsInList;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
@@ -12,9 +10,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
-import java.util.Iterator;
 import java.util.List;
-
+import java.util.stream.Collectors;
 
 /**
  * Forward chat messages
@@ -27,18 +24,12 @@ public final class ChatListener {
 	 */
 	@Subscribe(order = PostOrder.LATE)
 	public void onTabComplete(TabCompleteEvent event) {
-		final String label = event.getPartialMessage().trim().substring(1);
-		final List<String> args = event.getSuggestions();
+		String label = event.getPartialMessage().trim().substring(1);
+		List<String> filterArgs = Settings.getSettings().Tab_Complete.Filter_Arguments.get(label);
 
-		final IsInList<String> filterArgs = Settings.getSettings().Tab_Complete.Filter_Arguments.get(label);
-
-		if (filterArgs != null)
-			for (final Iterator<String> it = args.iterator(); it.hasNext();) {
-				final String arg = it.next();
-
-				if (filterArgs.contains(arg))
-					it.remove();
-			}
+		if(filterArgs != null) {
+			event.getSuggestions().stream().filter(suggestedArg -> !filterArgs.contains(suggestedArg)).collect(Collectors.toList());
+		}
 	}
 
 	/**
@@ -60,8 +51,7 @@ public final class ChatListener {
 		final ServerInfo server = player.getCurrentServer().get().getServerInfo();
 
 		if (server == null) {
-			Common.log("Unexpected error: unknown server for " + player.getUsername());
-
+			VelocityControl.getLogger().error("Unexpected error: unknown server for " + player.getUsername());
 			return;
 		}
 

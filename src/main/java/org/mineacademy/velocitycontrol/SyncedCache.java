@@ -1,8 +1,8 @@
 package org.mineacademy.velocitycontrol;
 
-import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.mineacademy.velocitycontrol.foundation.Common;
 import org.mineacademy.velocitycontrol.listener.OutgoingMessage;
 import org.mineacademy.velocitycontrol.listener.VelocityControlListener;
 import org.mineacademy.velocitycontrol.model.ChannelMode;
@@ -226,7 +226,7 @@ public final class SyncedCache {
 			put("player_afk", isAfk() ? "true" : "false");
 			put("player_ignoring_pms", isIgnoringPMs() ? "true" : "false");
 			put("player_ignoring_sound_notifications", isIgnoringSoundNotify() ? "true" : "false");
-			put("player_vanished", isVanished() ? "true" : "false"));
+			put("player_vanished", isVanished() ? "true" : "false");
 		}};
 	}
 

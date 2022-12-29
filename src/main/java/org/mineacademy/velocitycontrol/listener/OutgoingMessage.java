@@ -9,7 +9,7 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelMessageSink;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.mineacademy.velocitycontrol.VelocityControl;
-import org.mineacademy.velocitycontrol.exception.VCException;
+import org.mineacademy.velocitycontrol.foundation.exception.VCException;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 
 import java.util.*;

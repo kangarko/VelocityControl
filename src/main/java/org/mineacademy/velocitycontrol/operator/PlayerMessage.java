@@ -1,10 +1,6 @@
 package org.mineacademy.velocitycontrol.operator;
 
-import com.james090500.CoreFoundation.Common;
-import com.james090500.CoreFoundation.Valid;
-import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.exception.EventHandledException;
-import com.james090500.CoreFoundation.model.*;
+import com.google.common.base.Preconditions;
 import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import lombok.NonNull;
@@ -13,6 +9,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.foundation.Common;
+import org.mineacademy.velocitycontrol.foundation.exception.EventHandledException;
+import org.mineacademy.velocitycontrol.foundation.model.Rule;
+import org.mineacademy.velocitycontrol.foundation.model.SimpleTime;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
 import java.util.*;
@@ -40,13 +40,13 @@ public abstract class PlayerMessage extends Operator implements Rule {
 	 * order for the rule to apply
 	 */
 
-	private Tuple<String, String> requireSenderPermission;
+	private HashMap<String, String> requireSenderPermission;
 
 	/**
 	 * Permission required for receivers of the message of the rule
 	 */
 
-	private Tuple<String, String> requireReceiverPermission;
+	private HashMap<String, String> requireReceiverPermission;
 
 	/**
 	 * JavaScript boolean output required to be true for the rule to apply
@@ -232,12 +232,12 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			checkNotSet(this.requireSenderPermission, "require sender perm");
 			final String[] split = theRestThree.split(" ");
 
-			this.requireSenderPermission = new Tuple<>(split[0], split.length > 1 ? Common.joinRange(1, split) : null);
+			this.requireSenderPermission = new HashMap<>() {{ put(split[0], split.length > 1 ? Common.joinRange(1, split) : null); }};
 		} else if ("require receiver perm".equals(firstThreeParams) || "require receiver permission".equals(firstThreeParams)) {
 			checkNotSet(this.requireReceiverPermission, "require receiver perm");
 			final String[] split = theRestThree.split(" ");
 
-			this.requireReceiverPermission = new Tuple<>(split[0], split.length > 1 ? Common.joinRange(1, split) : null);
+			this.requireReceiverPermission = new HashMap<>() {{ put(split[0], split.length > 1 ? Common.joinRange(1, split) : null); }};
 		} else if ("require sender script".equals(firstThreeParams)) {
 			checkNotSet(this.requireSenderScript, "require sender script");
 
@@ -297,47 +297,19 @@ public abstract class PlayerMessage extends Operator implements Rule {
 	 * @return
 	 */
 	@Override
-	protected SerializedMap collectOptions() {
-		return SerializedMap.ofArray(
-			"Group", this.group,
-			"Prefix", this.prefix,
-			"Suffix", this.suffix,
-			//"Bungee", this.bungee,
-			"Messages", this.messages,
-
-			"Require Sender Permission", this.requireSenderPermission,
-			"Require Sender Script", this.requireSenderScript,
-				/*"Require Sender Gamemodes", this.requireSenderGamemodes,
-				"Require Sender Worlds", this.requireSenderWorlds,
-				"Require Sender Regions", this.requireSenderRegions,
-				"Require Sender Channels", this.requireSenderChannels,
-				
-				"Require Receiver Permission", this.requireReceiverPermission,
-				"Require Receiver Script", this.requireReceiverScript,
-				"Require Receiver Gamemodes", this.requireReceiverGamemodes,
-				"Require Receiver Worlds", this.requireReceiverWorlds,
-				"Require Receiver Regions", this.requireReceiverRegions,
-				"Require Receiver Channels", this.requireReceiverChannels,*/
-
-			"Require Self", this.requireSelf,
-			"Ignore Self", this.ignoreSelf,
-			//"Ignore Match", this.ignoreMatch,
-
-			"Ignore Sender Permission", this.ignoreSenderPermission,
-			"Ignore Sender Script", this.ignoreSenderScript//,
-		/*"Ignore Sender Regions", this.ignoreSenderRegions,
-		"Ignore Sender Gamemodes", this.ignoreSenderGamemodes,
-		"Ignore Sender Worlds", this.ignoreSenderWorlds,
-		"Ignore Sender Channels", this.ignoreSenderChannels,
-		
-		"Ignore Receiver Permission", this.ignoreReceiverPermission,
-		"Ignore Receiver Regions", this.ignoreReceiverRegions,
-		"Ignore Receiver Script", this.ignoreReceiverScript,
-		"Ignore Receiver Gamemodes", this.ignoreReceiverGamemodes,
-		"Ignore Receiver Worlds", this.ignoreReceiverWorlds,
-		"Ignore Receiver Channels", this.ignoreReceiverChannels*/
-
-		);
+	protected HashMap<String, Object> collectOptions() {
+		return new HashMap<>() {{
+			put("Group", group);
+			put("Prefix", prefix);
+			put("Suffix", suffix);
+			put("Messages", messages);
+			put("Require Sender Permission", requireSenderPermission);
+			put("Require Sender Script", requireSenderScript);
+			put("Require Self", requireSelf);
+			put("Ignore Self", ignoreSelf);
+			put("Ignore Sender Permission", ignoreSenderPermission);
+			put("Ignore Sender Script", ignoreSenderScript);
+		}};
 	}
 
 	/**
@@ -385,7 +357,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 		 */
 		private boolean executed;
 
-		protected PlayerMessageCheck(Type type, Player player, SerializedMap variables) {
+		protected PlayerMessageCheck(Type type, Player player, HashMap<String, String> variables) {
 			super(player, variables);
 
 			this.type = type;
@@ -536,7 +508,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 				}
 			}
 
-			if (operator.getRequireSenderServer() != null && this.isPlayer && !this.player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getRequireSenderServer())) {
+			if (operator.getRequireSenderServer() != null && !this.sender.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getRequireSenderServer())) {
 				VelocityControl.getLogger().debug("operator", "\tno require sender server");
 
 				return false;
@@ -593,7 +565,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 				}
 			}
 
-			if (operator.getIgnoreSenderServer() != null && this.isPlayer && this.player.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getIgnoreSenderServer())) {
+			if (operator.getIgnoreSenderServer() != null && this.sender.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getIgnoreSenderServer())) {
 				VelocityControl.getLogger().debug("operator", "\tignore sender server found");
 
 				return false;
@@ -614,7 +586,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 		@Override
 		protected void executeOperators(T operator) throws EventHandledException {
 			// Use the same message for all players
-			String replaceVariables = replaceVariables(this.pickedMessage, operator).replace("{player}", player.getUsername());
+			String replaceVariables = replaceVariables(this.pickedMessage, operator).replace("{player}", sender.getUsername());
 
 			TextComponent prefix = operator.getPrefix() != null ? LegacyComponentSerializer.legacyAmpersand().deserialize(operator.getPrefix()) : Component.text("");
 			TextComponent suffix = operator.getSuffix() != null ? LegacyComponentSerializer.legacyAmpersand().deserialize(Common.getOrEmpty(operator.getSuffix())) : Component.text("");
@@ -643,8 +615,10 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			return Replacer.replaceVariables(message, prepareVariables(operator));
 		}
 		@Override
-		protected SerializedMap prepareVariables(T operator) {
-			return super.prepareVariables(operator).putArray("broadcast_group", operator.getGroup());
+		protected HashMap<String, String> prepareVariables(T operator) {
+			HashMap<String, String> variables = super.prepareVariables(operator);
+			variables.put("broadcast_group", operator.getGroup());
+			return variables;
 		}
 	}
 

@@ -9,10 +9,7 @@ import org.yaml.snakeyaml.constructor.CustomClassLoaderConstructor;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents the main plugin configuration
@@ -85,7 +82,7 @@ public final class Settings {
 	 * Settings for tab filter
 	 */
 	public static class TabComplete {
-		public HashMap<String, String[]> Filter_Arguments;
+		public HashMap<String, List<String>> Filter_Arguments;
 	}
 
 	/**

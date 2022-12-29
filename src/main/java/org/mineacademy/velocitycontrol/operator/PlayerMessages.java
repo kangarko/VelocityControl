@@ -1,12 +1,10 @@
 package org.mineacademy.velocitycontrol.operator;
 
-import com.james090500.CoreFoundation.FileUtil;
-import com.james090500.CoreFoundation.RuleSetReader;
-import com.james090500.CoreFoundation.collection.SerializedMap;
 import com.velocitypowered.api.proxy.Player;
 import lombok.Getter;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.api.PlayerMessageEvent;
+import org.mineacademy.velocitycontrol.foundation.RuleSetReader;
 import org.mineacademy.velocitycontrol.operator.Operator.OperatorCheck;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage.PlayerMessageCheck;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage.Type;
@@ -52,7 +50,8 @@ public final class PlayerMessages extends RuleSetReader<PlayerMessage> {
 
 	@Override
 	protected PlayerMessage createRule(File file, String value) {
-		final JoinQuitKickMessage.Type type = PlayerMessage.Type.fromKey(FileUtil.getFileName(file));
+		String fileName = file.getName().replace(".rs", "");
+		final JoinQuitKickMessage.Type type = PlayerMessage.Type.fromKey(fileName);
 
 		return new JoinQuitKickMessage(type, value);
 
@@ -82,7 +81,7 @@ public final class PlayerMessages extends RuleSetReader<PlayerMessage> {
 	 * @param player
 	 * @param variables
 	 */
-	public static void broadcast(PlayerMessage.Type type, Player player, SerializedMap variables) {
+	public static void broadcast(PlayerMessage.Type type, Player player, HashMap<String, String> variables) {
 		if (Settings.getSettings().Messages.Apply_On.contains(type)) {
 			final OperatorCheck<?> check = new JoinQuitKickCheck(type, player, variables);
 			final PlayerMessageEvent event = new PlayerMessageEvent(player, type, check, variables);
@@ -116,7 +115,7 @@ public final class PlayerMessages extends RuleSetReader<PlayerMessage> {
 		/*
 		 * Create new constructor with handy objects
 		 */
-		private JoinQuitKickCheck(PlayerMessage.Type type, Player player, SerializedMap variables) {
+		private JoinQuitKickCheck(Type type, Player player, HashMap<String, String> variables) {
 			super(type, player, variables);
 
 			this.messages = PlayerMessages.getInstance().getMessages(type);

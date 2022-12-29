@@ -1,26 +1,26 @@
 package org.mineacademy.velocitycontrol.operator;
 
-import com.james090500.CoreFoundation.Common;
-import com.james090500.CoreFoundation.FileUtil;
-import com.james090500.CoreFoundation.Valid;
-import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.exception.EventHandledException;
-import com.james090500.CoreFoundation.exception.RegexTimeoutException;
-import com.james090500.CoreFoundation.model.*;
+import com.google.common.base.Preconditions;
 import com.velocitypowered.api.proxy.Player;
 import lombok.*;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.ServerCache;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.foundation.Common;
+import org.mineacademy.velocitycontrol.foundation.FileUtil;
+import org.mineacademy.velocitycontrol.foundation.exception.EventHandledException;
+import org.mineacademy.velocitycontrol.foundation.exception.RegexTimeoutException;
+import org.mineacademy.velocitycontrol.foundation.model.Rule;
+import org.mineacademy.velocitycontrol.foundation.model.SimpleTime;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,7 +28,6 @@ public abstract class Operator implements Rule {
 
 	/**
 	 * Represents the date formatting using to evaluate "expires" operator
-	 *
 	 * d MMM yyyy, HH:mm
 	 */
 	private final static DateFormat DATE_FORMATTING = new SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale.ENGLISH);
@@ -42,7 +41,7 @@ public abstract class Operator implements Rule {
 	/**
 	 * The delay between the next time this rule can be fired up, with optional warning message
 	 */
-	private Tuple<SimpleTime, String> delay;
+	private HashMap<SimpleTime, String> delay;
 
 	/**
 	 * List of commands to run as player when rule matches
@@ -165,7 +164,9 @@ public abstract class Operator implements Rule {
 				final SimpleTime time = SimpleTime.from(Common.joinRange(1, 3, args));
 				final String message = args.length > 2 ? Common.joinRange(3, args) : null;
 
-				this.delay = new Tuple<>(time, message);
+				this.delay = new HashMap<>() {{
+					put(time, message);
+				}};
 
 			} catch (final Throwable ex) {
 				Common.throwError(ex, "Syntax error in 'delay' operator. Valid: <amount> <unit> (1 second, 2 minutes). Got: " + String.join(" ", args));
@@ -211,44 +212,44 @@ public abstract class Operator implements Rule {
 			this.warnMessages.put(UUID.randomUUID(), theRest);
 
 		} else if ("then abort".equals(param)) {
-			Preconditions.checkArgument(this.abort == false, "then abort already used on " + this);
+			Preconditions.checkArgument(!this.abort, "then abort already used on " + this);
 
 			this.abort = true;
 		}
 
 		else if ("then deny".equals(param)) {
 			if ("silently".equals(theRest)) {
-				Preconditions.checkArgument(this.cancelMessageSilently == false, "then deny silently already used on " + this);
+				Preconditions.checkArgument(!this.cancelMessageSilently, "then deny silently already used on " + this);
 
 				this.cancelMessageSilently = true;
 
 			} else {
-				Preconditions.checkArgument(this.cancelMessage == false, "then deny already used on " + this);
+				Preconditions.checkArgument(!this.cancelMessage, "then deny already used on " + this);
 
 				this.cancelMessage = true;
 			}
 		}
 
 		else if ("require playedbefore".equals(param)) {
-			Preconditions.checkArgument(this.requirePlayedBefore == false, "require playedbefore already used on " + this);
+			Preconditions.checkArgument(!this.requirePlayedBefore, "require playedbefore already used on " + this);
 
 			this.requirePlayedBefore = true;
 		}
 
 		else if ("ignore playedbefore".equals(param)) {
-			Preconditions.checkArgument(this.ignorePlayedBefore == false, "ignore playedbefore already used on " + this);
+			Preconditions.checkArgument(!this.ignorePlayedBefore, "ignore playedbefore already used on " + this);
 
 			this.ignorePlayedBefore = true;
 		}
 
 		else if ("dont log".equals(param)) {
-			Preconditions.checkArgument(this.ignoreLogging == false, "dont log already used on " + this);
+			Preconditions.checkArgument(!this.ignoreLogging, "dont log already used on " + this);
 
 			this.ignoreLogging = true;
 		}
 
 		else if ("dont verbose".equals(param)) {
-			Preconditions.checkArgument(this.ignoreVerbose == false, "dont verbose already used on " + this);
+			Preconditions.checkArgument(!this.ignoreVerbose, "dont verbose already used on " + this);
 
 			this.ignoreVerbose = true;
 		}
@@ -295,11 +296,10 @@ public abstract class Operator implements Rule {
 	 * @param message
 	 * @return
 	 */
-	protected static final List<String> splitVertically(String message) {
+	protected static List<String> splitVertically(String message) {
 		final List<String> split = Arrays.asList(message.split("(?<!\\\\)\\|"));
 
-		for (int i = 0; i < split.size(); i++)
-			split.set(i, split.get(i).replace("\\|", "|"));
+		split.replaceAll(s -> s.replace("\\|", "|"));
 
 		return split;
 	}
@@ -309,51 +309,26 @@ public abstract class Operator implements Rule {
 	 *
 	 * @return
 	 */
-	protected SerializedMap collectOptions() {
-		return SerializedMap.ofArray(
-				//"Require Keys", this.requireData,
-				//"Ignore Keys", this.ignoreData,
-				//"Save Keys", this.saveData,
-				"Expires", this.expires != -1 ? this.expires : null,
-				"Delay", this.delay,
-				"Player Commands", this.playerCommands,
-				//"Console Commands", this.consoleCommands,
-				"BungeeCord Commands", this.bungeeCommands,
-				"Console Messages", this.consoleMessages,
-				"Kick Message", this.kickMessage,
-				//"Toast Message", this.toast,
-				//"Notify Messages", this.notifyMessages,
-				"Discord Message", this.discordMessages,
-				"Log To File", this.writeMessages,
-				//"Fine", this.fine,
-				//"Warning Points", this.warningPoints,
-				//"Sounds", this.sounds,
-				//"Book", this.book,
-				//"Title", this.title,
-				//"Action Bar", this.actionBar,
-				//"Boss Bar", this.bossBar == null ? null : this.bossBar.toString(),
-				"Warn Messages", this.warnMessages,
-				"Abort", this.abort,
-				"Cancel Message", this.cancelMessage,
-				"Cancel Message Silently", this.cancelMessageSilently,
-				"Require Played Before", this.requirePlayedBefore,
-				"Ignore Played Before", this.ignorePlayedBefore,
-				//"Require Discord", this.requireDiscord,
-				"Ignore Logging", this.ignoreLogging,
-				"Ignore Verbose", this.ignoreVerbose,
-				//"Ignore Discord", this.ignoreDiscord,
-				"Disabled", this.disabled
-
-		);
-	}
-
-	/**
-	 * Return a tostring representation suitable to show in game
-	 *
-	 * @return
-	 */
-	public final String toDisplayableString() {
-		return Common.revertColorizing(toString().replace("\t", "    "));
+	protected HashMap<String, Object> collectOptions() {
+		return new HashMap<>() {{
+			put("Expires", expires != -1 ? expires : null);
+			put("Delay", delay);
+			put("Player Commands", playerCommands);
+			put("BungeeCord Commands", bungeeCommands);
+			put("Console Messages", consoleMessages);
+			put("Kick Message", kickMessage);
+			put("Discord Message", discordMessages);
+			put("Log To File", writeMessages);
+			put("Warn Messages", warnMessages);
+			put("Abort", abort);
+			put("Cancel Message", cancelMessage);
+			put("Cancel Message Silently", cancelMessageSilently);
+			put("Require Played Before", requirePlayedBefore);
+			put("Ignore Played Before", ignorePlayedBefore);
+			put("Ignore Logging", ignoreLogging);
+			put("Ignore Verbose", ignoreVerbose);
+			put("Disabled", disabled);
+		}};
 	}
 
 	/**
@@ -377,22 +352,12 @@ public abstract class Operator implements Rule {
 		/**
 		 * Variables available at all times
 		 */
-		private final SerializedMap variables;
+		private final HashMap<String, String> variables;
 
 		/**
 		 * The sender involved in this check
 		 */
 		protected Player sender;
-
-		/**
-		 * Is the {@link #sender} a {@link Player}?
-		 */
-		protected boolean isPlayer;
-
-		/**
-		 * The player if {@link #isPlayer} is true
-		 */
-		protected Player player;
 
 		/**
 		 * Should we cancel the event silently and only send the message
@@ -404,12 +369,9 @@ public abstract class Operator implements Rule {
 		/**
 		 * Construct check and useful parameters
 		 */
-		protected OperatorCheck(@NonNull Player sender, SerializedMap variables) {
+		protected OperatorCheck(@NonNull Player sender, HashMap<String, String> variables) {
 			this.variables = variables;
 			this.sender = sender;
-
-			this.isPlayer = sender instanceof Player;
-			this.player = isPlayer ? sender : null;
 		}
 
 		public final void start() {
@@ -458,7 +420,7 @@ public abstract class Operator implements Rule {
 		/**
 		 * Return true if the given operator can be applied for the given message
 		 */
-		private final boolean canFilter(T operator) {
+		private boolean canFilter(T operator) {
 
 			// Ignore disabled rules
 			if (operator.isDisabled())
@@ -470,10 +432,10 @@ public abstract class Operator implements Rule {
 
 			final ServerCache cache = ServerCache.getInstance();
 
-			if (operator.isRequirePlayedBefore() && !cache.isPlayerRegistered(this.player))
+			if (operator.isRequirePlayedBefore() && !cache.isPlayerRegistered(this.sender))
 				return false;
 
-			if (operator.isIgnorePlayedBefore() && cache.isPlayerRegistered(this.player))
+			if (operator.isIgnorePlayedBefore() && cache.isPlayerRegistered(this.sender))
 				return false;
 
 			return true;
@@ -484,9 +446,8 @@ public abstract class Operator implements Rule {
 		 */
 		protected void executeOperators(T operator) throws EventHandledException {
 
-			if (isPlayer)
-				for (final String command : operator.getPlayerCommands())
-					VelocityControl.getServer().getCommandManager().executeAsync(player, replaceVariables(command, operator));
+			for (final String command : operator.getPlayerCommands())
+				VelocityControl.getServer().getCommandManager().executeAsync(sender, replaceVariables(command, operator));
 
 			for (final String commandLine : operator.getBungeeCommands()) {
 				final String command = Common.joinRange(0, commandLine.split(" "));
@@ -507,15 +468,15 @@ public abstract class Operator implements Rule {
 			if (operator.getKickMessage() != null) {
 				final String kickReason = replaceVariables(operator.getKickMessage(), operator);
 
-				if (isPlayer)
-					player.disconnect(Component.text(kickReason));
+				sender.disconnect(Component.text(kickReason));
 			}
 
 			// Dirty: Run later including when EventHandledException is thrown
 			if (!operator.getWarnMessages().isEmpty())
 				Common.runLater(1, () -> {
 					for (final Entry<UUID, String> entry : operator.getWarnMessages().entrySet()) {
-						final String warnMessage = RandomUtil.nextItem(splitVertically(entry.getValue())); // pick one in a list of |
+						List<String> warnMessages = splitVertically(entry.getValue());
+						final String warnMessage = warnMessages.get(ThreadLocalRandom.current().nextInt(warnMessages.size()));
 
 						sender.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize(replaceVariables(warnMessage, operator)));
 					}
@@ -548,52 +509,23 @@ public abstract class Operator implements Rule {
 		 * @param operator
 		 * @return
 		 */
-		protected SerializedMap prepareVariables(T operator) {
+		protected HashMap<String, String> prepareVariables(T operator) {
 			final SyncedCache cache = SyncedCache.fromName(this.sender.getUsername());
-			final SerializedMap map = cache != null ? cache.toVariables()
-					: SerializedMap.ofArray(
-					"player_name", this.sender.getUsername(),
-					"name", this.sender.getUsername(),
-					"player_nick", this.sender.getUsername(),
-					"nick", this.sender.getUsername(),
-					"player_group", "",
-					"player_prefix", "",
-					"player_server", this.sender instanceof Player ? this.sender.getCurrentServer().get().getServerInfo().getName() : "",
-					"player_afk", "false",
-					"player_ignoring_pms", "false",
-					"player_vanished", "false");
+			final HashMap<String, String> map = cache != null ? cache.toVariables() : new HashMap<>() {{
+				put("player_name", sender.getUsername());
+				put("name", sender.getUsername());
+				put("player_nick", sender.getUsername());
+				put("nick", sender.getUsername());
+				put("player_group", "");
+				put("player_prefix", "");
+				put("player_server", sender.getCurrentServer().isPresent() ? sender.getCurrentServer().get().getServerInfo().getName() : "ERROR");
+				put("player_afk", "false");
+				put("player_ignoring_pms", "false");
+				put("player_vanished", "false");
+			}};
 
-			return map.mergeFrom(this.variables);
-		}
-
-		/**
-		 * Return if the sender has the given permission
-		 *
-		 * @param permission
-		 * @return
-		 */
-		protected final boolean hasPerm(String permission) {
-			return this.sender.hasPermission(permission);
-		}
-
-		/**
-		 * Cancels the pipeline by throgin a {@link EventHandledException}
-		 */
-		protected final void cancel() {
-			this.cancel(null);
-		}
-
-		/**
-		 * Cancels the pipeline by throgin a {@link EventHandledException}
-		 * and send an error message to the player
-		 *
-		 * @param errorMessage
-		 */
-		protected final void cancel(String errorMessage) {
-			if (errorMessage != null)
-				sender.sendMessage(Component.text(errorMessage).color(NamedTextColor.RED));
-
-			throw new EventHandledException(true);
+			map.putAll(this.variables);
+			return map;
 		}
 
 		/**

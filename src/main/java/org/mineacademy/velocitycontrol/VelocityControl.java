@@ -1,7 +1,6 @@
 package org.mineacademy.velocitycontrol;
 
 import com.google.inject.Inject;
-import com.james090500.CoreFoundation.debug.Debugger;
 import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -74,8 +73,6 @@ public final class VelocityControl {
 		ServerCache.getInstance();
 		Settings.load();
 
-		Debugger.setDebugAll(Settings.getSettings().Debug);
-
 		velocityControl = new VelocityControlListener();
 		server.getChannelRegistrar().register(CHANNEL);
 		server.getEventManager().register(this, new SwitchListener());
@@ -108,8 +105,9 @@ public final class VelocityControl {
 	/* ------------------------------------------------------------------------------- */
 
 	public static void debug(String a, String b) {
-		if(Settings.getSettings().)
-		VelocityControl.getLogger().info("[" + a + "] " + b);
+		if(Settings.getSettings().Debug) {
+			VelocityControl.getLogger().info("[" + a + "] " + b);
+		}
 	}
 
 	/**

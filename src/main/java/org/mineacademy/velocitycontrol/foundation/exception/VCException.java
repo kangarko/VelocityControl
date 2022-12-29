@@ -1,4 +1,6 @@
-package org.mineacademy.velocitycontrol.exception;
+package org.mineacademy.velocitycontrol.foundation.exception;
+
+import org.mineacademy.velocitycontrol.foundation.Debugger;
 
 /**
  * Represents our core exception. All exceptions of this

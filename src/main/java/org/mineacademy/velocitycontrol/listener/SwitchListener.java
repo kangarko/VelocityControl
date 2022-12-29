@@ -1,7 +1,5 @@
 package org.mineacademy.velocitycontrol.listener;
 
-import com.james090500.CoreFoundation.collection.SerializedMap;
-import com.james090500.CoreFoundation.model.Tuple;
 import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
@@ -36,7 +34,7 @@ public final class SwitchListener {
 	 *
 	 * It overrides previous values, only last message will get shown
 	 */
-	private static final Map<UUID, Tuple<PlayerMessage.Type, SerializedMap>> pendingMessages = new HashMap<>();
+	private static final Map<UUID, HashMap<PlayerMessage.Type, HashMap<String, String>>> pendingMessages = new HashMap<>();
 
 	/**
 	 * Because join and switch events are called in the same event (ServerSwitchEvent), we
@@ -58,7 +56,7 @@ public final class SwitchListener {
 
 			if (!isSilent(toServer)) {
 				VelocityControl.getLogger().debug("player-message", "Detected " + player.getUsername() + " join to " + toServer + ", waiting for server data..");
-				pendingMessages.put(player.getUniqueId(), new Tuple<>(PlayerMessage.Type.JOIN, SerializedMap.of("server", toServer)));
+				pendingMessages.put(player.getUniqueId(), (HashMap<PlayerMessage.Type, HashMap<String, String>>) Map.of(PlayerMessage.Type.JOIN, (HashMap<String, String>) Map.of("server", toServer)));
 			}
 		}
 	}
@@ -80,7 +78,7 @@ public final class SwitchListener {
 			final String toServer = Settings.getServerNameAlias(currentServer);
 
 			if (!isSilent(fromServer)) {
-				pendingMessages.put(player.getUniqueId(), new Tuple<>(PlayerMessage.Type.SWITCH, SerializedMap.ofArray("from_server", fromServer, "to_server", toServer)));
+				pendingMessages.put(player.getUniqueId(), (HashMap<PlayerMessage.Type, HashMap<String, String>>) Map.of(PlayerMessage.Type.SWITCH, (HashMap<String, String>) Map.of("from_server", fromServer, "to_server", toServer)));
 			}
 		}
 	}
@@ -97,7 +95,7 @@ public final class SwitchListener {
 			final SyncedCache synced = SyncedCache.fromName(playerName);
 
 			if (synced != null && !synced.isVanished() && !isSilent(fromServer)) {
-				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, SerializedMap.of("server", fromServer));
+				PlayerMessages.broadcast(PlayerMessage.Type.QUIT, player, (HashMap<String, String>) Map.of("server", fromServer));
 
 				if (!cache.isPlayerRegistered(player)) {
 					cache.registerPlayer(player);
@@ -132,22 +130,13 @@ public final class SwitchListener {
 	 * @param player
 	 */
 	public static void broadcastPendingMessage(@NonNull Player player) {
-		final Tuple<PlayerMessage.Type, SerializedMap> data = pendingMessages.remove(player.getUniqueId());
+		final HashMap<PlayerMessage.Type, HashMap<String, String>> data = pendingMessages.remove(player.getUniqueId());
 
-		if (data != null) {
-
-			final PlayerMessage.Type type = data.getKey();
-			final SerializedMap variables = data.getValue();
+		data.forEach((type, variables) -> {
 			final SyncedCache cache = SyncedCache.fromName(player.getUsername());
-
 			if (!cache.isVanished() || player.hasPermission("chatcontrol.bypass.reach")) {
-				//VelocityControl.getLogger().debug("player-message", "Broadcast " + type + " message for " + player.getName() + " with variables " + variables);
 				PlayerMessages.broadcast(type, player, variables);
-			} //else
-				//VelocityControl.getLogger().debug("player-message", "Failed sending " + type + " message for " + player.getName() + ", vanished ? " + cache.isVanished() + ", has bypass reach perm ? " + player.hasPermission("chatcontrol.bypass.reach"));
-		}
-
-		//else
-			//VelocityControl.getLogger().debug("player-message", "Failed finding pending join/switch message for " + player.getName() + ", quitting..");
+			}
+		});
 	}
 }
