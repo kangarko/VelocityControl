@@ -256,7 +256,7 @@ public final class SyncedCache {
 				final SyncedCache cache = cacheMap.get(playerName);
 
 				if (cache != null) {
-					VelocityControl.getLogger().info("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
+					VelocityControl.getLogger().debug("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
 
 					cache.loadData(dataLine);
 				}

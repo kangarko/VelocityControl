@@ -47,10 +47,6 @@ public final class Common {
 	 */
 	private static final Pattern RGB_X_COLOR_REGEX = Pattern.compile("(" + LegacyComponentSerializer.SECTION_CHAR + "x)(" + LegacyComponentSerializer.SECTION_CHAR + "[0-9a-fA-F]){6}");
 
-	/**
-	 * We use this to send messages with colors to your console
-	 */
-	private static final ConsoleCommandSource CONSOLE_SENDER = VelocityControl.getServer().getConsoleCommandSource();
 
 	// ------------------------------------------------------------------------------------------------------------
 	// Tell prefix
@@ -184,16 +180,12 @@ public final class Common {
 		if (messages == null)
 			return;
 
-		if (CONSOLE_SENDER == null)
-			throw new VCException("Failed to initialize Console Sender, are you running Foundation under a Bukkit/Spigot server?");
-
 		for (String message : messages) {
 			if (message.equals("none"))
 				continue;
 
 			if (stripColors(message).replace(" ", "").isEmpty()) {
-				CONSOLE_SENDER.sendMessage(Component.text("  "));
-
+				VelocityControl.getLogger().error("  ");
 				continue;
 			}
 
@@ -207,7 +199,7 @@ public final class Common {
 				for (final String part : message.split("\n")) {
 					final String log = ((addLogPrefix && ADD_LOG_PREFIX ? removeSurroundingSpaces(logPrefix) + " " : "") + getOrEmpty(part).replace("\n", "\n&r")).trim();
 
-					CONSOLE_SENDER.sendMessage(Component.text(log));
+					VelocityControl.getLogger().error(log);
 				}
 		}
 	}
@@ -224,14 +216,14 @@ public final class Common {
 	@Deprecated
 	public static void logFramed(final boolean disablePlugin, final String... messages) {
 		if (messages != null && messages != null) {
-			log("&7" + consoleLine());
+			log(consoleLine());
 			for (final String msg : messages)
-				log(" &c" + msg);
+				log(msg);
 
 			if (disablePlugin)
-				log(" &cPlugin is now disabled.");
+				log("Plugin is now disabled.");
 
-			log("&7" + consoleLine());
+			log(consoleLine());
 		}
 	}
 
