@@ -11,6 +11,7 @@ import lombok.NonNull;
 import org.mineacademy.velocitycontrol.ServerCache;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.foundation.Debugger;
 import org.mineacademy.velocitycontrol.operator.PlayerMessage;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -55,7 +56,7 @@ public final class SwitchListener {
 			final String toServer = Settings.getServerNameAlias(event.getServer());
 
 			if (!isSilent(toServer)) {
-				VelocityControl.getLogger().debug("player-message", "Detected " + player.getUsername() + " join to " + toServer + ", waiting for server data..");
+				Debugger.debug("player-message", "Detected " + player.getUsername() + " join to " + toServer + ", waiting for server data..");
 				pendingMessages.put(player.getUniqueId(), new HashMap<>() {{ put(PlayerMessage.Type.JOIN, new HashMap<>() {{ put("server", toServer); }}); }});
 			}
 		}

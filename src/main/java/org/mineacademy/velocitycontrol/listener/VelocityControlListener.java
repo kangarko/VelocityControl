@@ -8,6 +8,7 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.mineacademy.velocitycontrol.SyncedCache;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.foundation.Debugger;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 import org.mineacademy.velocitycontrol.settings.Settings;
 
@@ -135,7 +136,7 @@ public final class VelocityControlListener {
         final ProxyPacket packet = message.getAction();
 
 //        if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER) {
-//            VelocityControl.getLogger().debug("Incoming packet " + packet + " from " + serverName);
+//            Debugger.debug("Incoming packet " + packet + " from " + serverName);
 //        }
 
         if (packet == ProxyPacket.PLAYERS_CLUSTER_DATA) {
@@ -184,18 +185,18 @@ public final class VelocityControlListener {
             final RegisteredServer iteratedServer = server;
 
             if (iteratedServer.getPlayersConnected().isEmpty()) {
-                VelocityControl.getLogger().debug("packet", "\tDid not send to '" + iteratedName + "', the server is empty");
+                Debugger.debug("packet", "\tDid not send to '" + iteratedName + "', the server is empty");
 
                 continue;
             }
 
             if (!forceSelf && iteratedServer.getServerInfo().getAddress().equals(this.connection.getServerInfo().getAddress())) {
-                VelocityControl.getLogger().debug("packet", "\tDid not send to '" + iteratedName + "', the server equals sender");
+                Debugger.debug("packet", "\tDid not send to '" + iteratedName + "', the server equals sender");
 
                 continue;
             }
 
-            VelocityControl.getLogger().debug("packet", "\tForwarded to '" + iteratedName + "'");
+            Debugger.debug("packet", "\tForwarded to '" + iteratedName + "'");
             iteratedServer.sendPluginMessage(VelocityControl.CHANNEL, data);
         }
     }

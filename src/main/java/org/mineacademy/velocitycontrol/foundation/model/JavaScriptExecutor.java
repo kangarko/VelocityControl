@@ -11,7 +11,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -57,15 +56,13 @@ public final class JavaScriptExecutor {
             final String nashorn = "org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory";
 
             try {
-                if (doesClassExist(nashorn)) {
-                    Constructor constructor = Class.forName(nashorn).getDeclaredConstructor();
-                    constructor.setAccessible(true);
+                Constructor constructor = Class.forName(nashorn).getDeclaredConstructor();
+                constructor.setAccessible(true);
 
-                    final ScriptEngineFactory engineFactory = (ScriptEngineFactory) constructor.newInstance();
+                final ScriptEngineFactory engineFactory = (ScriptEngineFactory) constructor.newInstance();
 
-                    engineManager.registerEngineName("Nashorn", engineFactory);
-                    scriptEngine = engineManager.getEngineByName("Nashorn");
-                }
+                engineManager.registerEngineName("Nashorn", engineFactory);
+                scriptEngine = engineManager.getEngineByName("Nashorn");
             } catch(Exception e) {
                 if(!(e instanceof ClassNotFoundException)) {
                     e.printStackTrace();
@@ -93,7 +90,7 @@ public final class JavaScriptExecutor {
                         "To fix this, install Java 11 from Oracle",
                         "or other vendor that supports Nashorn."));
 
-            Common.logFramed(false, warningMessage.toArray(String[]::new));
+            Common.logFramed(warningMessage.toArray(String[]::new));
         }
     }
 
@@ -167,16 +164,6 @@ public final class JavaScriptExecutor {
 
             throw new RuntimeException(error + " '" + javascript + "'", ex);
         }
-    }
-
-    /**
-     * Checks if a class exists or not
-     * @param name
-     * @return
-     */
-    private static boolean doesClassExist(String name) throws ClassNotFoundException {
-        Class c = Class.forName(name);
-        return c != null;
     }
 
 }

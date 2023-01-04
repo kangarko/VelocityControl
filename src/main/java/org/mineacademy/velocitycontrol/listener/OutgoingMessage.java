@@ -6,6 +6,7 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.Gson;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.foundation.Debugger;
 import org.mineacademy.velocitycontrol.foundation.exception.VCException;
 import org.mineacademy.velocitycontrol.model.ProxyPacket;
 
@@ -53,7 +54,7 @@ public final class OutgoingMessage extends Message {
 
 	public void send(RegisteredServer server) {
 		server.sendPluginMessage(this.getChannel(), this.compileData());
-		VelocityControl.getLogger().debug("bungee", "Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server.");
+		Debugger.debug("bungee", "Sending data on " + this.getChannel() + " channel from " + this.getAction() + " to " + server.getServerInfo() + " server.");
 	}
 
 	public byte[] compileData() {

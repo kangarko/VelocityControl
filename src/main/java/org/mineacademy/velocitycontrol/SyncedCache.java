@@ -2,6 +2,7 @@ package org.mineacademy.velocitycontrol;
 
 import lombok.Getter;
 import org.mineacademy.velocitycontrol.foundation.Common;
+import org.mineacademy.velocitycontrol.foundation.Debugger;
 import org.mineacademy.velocitycontrol.listener.OutgoingMessage;
 import org.mineacademy.velocitycontrol.listener.VelocityControlListener;
 import org.mineacademy.velocitycontrol.model.ChannelMode;
@@ -256,7 +257,7 @@ public final class SyncedCache {
 				final SyncedCache cache = cacheMap.get(playerName);
 
 				if (cache != null) {
-					VelocityControl.getLogger().debug("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
+					Debugger.debug("Loading data for " + playerName + " of type " + syncType + " from line " + dataLine);
 
 					cache.loadData(dataLine);
 				}

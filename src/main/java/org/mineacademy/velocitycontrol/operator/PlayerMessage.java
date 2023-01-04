@@ -10,6 +10,7 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.foundation.Common;
+import org.mineacademy.velocitycontrol.foundation.Debugger;
 import org.mineacademy.velocitycontrol.foundation.exception.EventHandledException;
 import org.mineacademy.velocitycontrol.foundation.model.JavaScriptExecutor;
 import org.mineacademy.velocitycontrol.foundation.model.Rule;
@@ -380,7 +381,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 		@Override
 		protected void filter(T message) throws EventHandledException {
 
-			VelocityControl.getLogger().debug("operator", "FILTERING " + message.getUid());
+			Debugger.debug("operator", "FILTERING " + message.getUid());
 
 			// Delay
 			if (message.getDelay() != null) {
@@ -391,7 +392,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 				final long delay = Math.round((now - message.getLastExecuted()) / 1000D);
 
 				if (delay < time.getTimeSeconds()) {
-					VelocityControl.getLogger().debug("operator", "\tbefore delay: " + delay + " threshold: " + time.getTimeSeconds());
+					Debugger.debug("operator", "\tbefore delay: " + delay + " threshold: " + time.getTimeSeconds());
 
 					return;
 				}
@@ -411,7 +412,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 				}
 
 				if (this.messageReceivers.contains(player.getUniqueId()) && Settings.getSettings().Messages.Stop_On_First_Match) {
-					VelocityControl.getLogger().debug("operator", "\t" + player.getUsername() + " already received a message");
+					Debugger.debug("operator", "\t" + player.getUsername() + " already received a message");
 
 					continue;
 				}
@@ -420,7 +421,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 
 				// Filter for each player
 				if (!canFilterMessage(message)) {
-					VelocityControl.getLogger().debug("operator", "\tcanFilterMessage returned false for " + player.getUsername());
+					Debugger.debug("operator", "\tcanFilterMessage returned false for " + player.getUsername());
 
 					continue;
 				}
@@ -442,7 +443,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 		protected boolean canFilterMessage(T operator) {
 			Preconditions.checkNotNull(receiver, "receiver in canFilter == null");
 
-			VelocityControl.getLogger().debug("operator", "CAN FILTER message " + operator.getUid());
+			Debugger.debug("operator", "CAN FILTER message " + operator.getUid());
 
 			// ----------------------------------------------------------------
 			// Require
@@ -459,7 +460,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 						throw new EventHandledException(true);
 					}
 
-					VelocityControl.getLogger().debug("operator", "\tno required sender permission");
+					Debugger.debug("operator", "\tno required sender permission");
 					return false;
 				}
 			}
@@ -477,7 +478,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 						throw new EventHandledException(true);
 					}
 
-					VelocityControl.getLogger().debug("operator", "\tno required receiver permission");
+					Debugger.debug("operator", "\tno required receiver permission");
 					return false;
 				}
 			}
@@ -489,7 +490,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 					Preconditions.checkArgument(result instanceof Boolean, "require sender script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
 
 					if ((boolean) result == false) {
-						VelocityControl.getLogger().debug("operator", "\tno required sender script");
+						Debugger.debug("operator", "\tno required sender script");
 
 						return false;
 					}
@@ -503,7 +504,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 					Preconditions.checkArgument(result instanceof Boolean, "require receiver script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
 
 					if ((boolean) result == false) {
-						VelocityControl.getLogger().debug("operator", "\tno required receiver script");
+						Debugger.debug("operator", "\tno required receiver script");
 
 						return false;
 					}
@@ -511,13 +512,13 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			}
 
 			if (operator.getRequireSenderServer() != null && !this.sender.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getRequireSenderServer())) {
-				VelocityControl.getLogger().debug("operator", "\tno require sender server");
+				Debugger.debug("operator", "\tno require sender server");
 
 				return false;
 			}
 
 			if (operator.getRequireReceiverServer() != null && !this.receiver.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getRequireReceiverServer())) {
-				VelocityControl.getLogger().debug("operator", "\tno require receiver server");
+				Debugger.debug("operator", "\tno require receiver server");
 
 				return false;
 			}
@@ -528,13 +529,13 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			// ----------------------------------------------------------------
 
 			if (operator.getIgnoreSenderPermission() != null && this.sender.hasPermission(replaceVariables(operator.getIgnoreSenderPermission(), operator))) {
-				VelocityControl.getLogger().debug("operator", "\tignore sender permission found");
+				Debugger.debug("operator", "\tignore sender permission found");
 
 				return false;
 			}
 
 			if (operator.getIgnoreReceiverPermission() != null && this.receiver.hasPermission(replaceReceiverVariables(operator.getIgnoreReceiverPermission(), operator))) {
-				VelocityControl.getLogger().debug("operator", "\tignore receiver permission found");
+				Debugger.debug("operator", "\tignore receiver permission found");
 
 				return false;
 			}
@@ -546,7 +547,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 					Preconditions.checkArgument(result instanceof Boolean, "ignore sendre script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
 
 					if ((boolean) result == true) {
-						VelocityControl.getLogger().debug("operator", "\tignore sender script found");
+						Debugger.debug("operator", "\tignore sender script found");
 
 						return false;
 					}
@@ -560,7 +561,7 @@ public abstract class PlayerMessage extends Operator implements Rule {
 					Preconditions.checkArgument(result instanceof Boolean, "ignore receiver script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
 
 					if ((boolean) result == true) {
-						VelocityControl.getLogger().debug("operator", "\tignore receiver script found");
+						Debugger.debug("operator", "\tignore receiver script found");
 
 						return false;
 					}
@@ -568,13 +569,13 @@ public abstract class PlayerMessage extends Operator implements Rule {
 			}
 
 			if (operator.getIgnoreSenderServer() != null && this.sender.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getIgnoreSenderServer())) {
-				VelocityControl.getLogger().debug("operator", "\tignore sender server found");
+				Debugger.debug("operator", "\tignore sender server found");
 
 				return false;
 			}
 
 			if (operator.getIgnoreReceiverServer() != null && this.receiver.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getIgnoreReceiverServer())) {
-				VelocityControl.getLogger().debug("operator", "\tignore receiver server found");
+				Debugger.debug("operator", "\tignore receiver server found");
 
 				return false;
 			}

@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.mineacademy.velocitycontrol.VelocityControl;
+import org.mineacademy.velocitycontrol.settings.Settings;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -96,13 +97,13 @@ public final class Debugger {
      * @param throwable the throwable to print
      */
     public static void printStackTrace(@NonNull Throwable throwable) {
-        print(throwable.toString());
+        Debugger.debug(throwable.toString());
 
         for (final StackTraceElement element : throwable.getStackTrace()) {
             final String line = element.toString();
 
             if (canPrint(line))
-                print("\tat " + line);
+                Debugger.debug("\tat " + line);
         }
 
         Throwable cause = throwable.getCause();
@@ -118,8 +119,13 @@ public final class Debugger {
         return !message.contains("net.minecraft") && !message.contains("org.bukkit.craftbukkit") && !message.contains("nashorn") && !message.contains("javax.script");
     }
 
-    // Print a simple console message
-    public static void print(String message) {
-        VelocityControl.getLogger().debug(message);
+    public static void debug(String a) {
+        if(!Settings.getSettings().Debug) return;
+        VelocityControl.getLogger().debug(a);
+    }
+
+    public static void debug(String a, String b) {
+        if(!Settings.getSettings().Debug) return;
+        VelocityControl.getLogger().debug("[" + a + "] " + b);
     }
 }

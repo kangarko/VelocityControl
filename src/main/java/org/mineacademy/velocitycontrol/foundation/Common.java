@@ -209,19 +209,14 @@ public final class Common {
 	 * <p>
 	 * Used when an error occurs, can also disable the plugin
 	 *
-	 * @param disablePlugin
 	 * @param messages
-	 * @deprecated BungeeCord cannot disable plugins
 	 */
-	@Deprecated
-	public static void logFramed(final boolean disablePlugin, final String... messages) {
+	public static void logFramed(final String... messages) {
 		if (messages != null && messages != null) {
 			log(consoleLine());
 			for (final String msg : messages)
 				log(msg);
 
-			if (disablePlugin)
-				log("Plugin is now disabled.");
 
 			log(consoleLine());
 		}
@@ -239,7 +234,7 @@ public final class Common {
 			Debugger.saveError(t, messages);
 
 		Debugger.printStackTrace(t);
-		logFramed(false, replaceErrorVariable(t, messages));
+		logFramed(replaceErrorVariable(t, messages));
 	}
 
 	/**
@@ -262,7 +257,7 @@ public final class Common {
 			throw (VCException) t;
 
 		if (messages != null)
-			logFramed(false, replaceErrorVariable(t, messages));
+			logFramed(replaceErrorVariable(t, messages));
 
 		Debugger.saveError(t, messages);
 	}
