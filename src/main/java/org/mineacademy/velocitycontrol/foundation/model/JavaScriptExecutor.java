@@ -8,7 +8,10 @@ import org.mineacademy.velocitycontrol.foundation.exception.EventHandledExceptio
 
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -47,6 +50,27 @@ public final class JavaScriptExecutor {
             engineManager = new ScriptEngineManager(null);
 
             scriptEngine = engineManager.getEngineByName("Nashorn");
+        }
+
+        // If still fails, try to load our own library for Java 15 and up
+        if (scriptEngine == null) {
+            final String nashorn = "org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory";
+
+            try {
+                if (doesClassExist(nashorn)) {
+                    Constructor constructor = Class.forName(nashorn).getDeclaredConstructor();
+                    constructor.setAccessible(true);
+
+                    final ScriptEngineFactory engineFactory = (ScriptEngineFactory) constructor.newInstance();
+
+                    engineManager.registerEngineName("Nashorn", engineFactory);
+                    scriptEngine = engineManager.getEngineByName("Nashorn");
+                }
+            } catch(Exception e) {
+                if(!(e instanceof ClassNotFoundException)) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         engine = scriptEngine;
@@ -143,6 +167,16 @@ public final class JavaScriptExecutor {
 
             throw new RuntimeException(error + " '" + javascript + "'", ex);
         }
+    }
+
+    /**
+     * Checks if a class exists or not
+     * @param name
+     * @return
+     */
+    private static boolean doesClassExist(String name) throws ClassNotFoundException {
+        Class c = Class.forName(name);
+        return c != null;
     }
 
 }
