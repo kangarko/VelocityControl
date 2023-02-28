@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 /**
 * The main VelocityControl Red plugin class.
 */
-@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.1-SNAPSHOT", authors = {"kangarko", "relavis", "james090500"})
+@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.2-SNAPSHOT", authors = {"kangarko", "relavis", "james090500"})
 public final class VelocityControl {
 	@Getter
 	private static VelocityControl instance;

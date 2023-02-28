@@ -1,9 +1,9 @@
 package org.mineacademy.velocitycontrol.model;
 
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.UUID;
+
+import lombok.Getter;
 
 /**
  * Proprietary implementation of BungeeAction for some of our
@@ -28,8 +28,7 @@ public enum ProxyPacket {
 	/**
 	 * Clears the game chat
 	 */
-	CLEAR_CHAT(String.class /*broacast message*/
-	),
+	CLEAR_CHAT(String.class /*broacast message*/, Boolean.class /* forced */ ),
 
 	/**
 	 * Forward commands to BungeeCord or other server
@@ -74,13 +73,13 @@ public enum ProxyPacket {
 	/**
 	 * Broadcast message to spying players
 	 */
-	SPY(String.class /*spy type*/, String.class /*channel name*/, Boolean.class, /*TODO*/ String.class /*message*/, String.class /*simplecomponent json*/, String.class /*json string list of UUIDs of players we should ignore*/
+	SPY(String.class /*spy type*/, String.class /*channel name*/, Boolean.class /* has bungee mode */, String.class /*message*/, String.class /*simplecomponent json*/, String.class /*json string list of UUIDs of players we should ignore*/
 	),
 
 	/**
 	 * Send a toast message
 	 */
-	TOAST(UUID.class /*receiver UUID*/, String.class /*toggle type*/, String.class /*message*/, String.class, /*compmaterial*/ String.class /*TODO*/
+	TOAST(UUID.class /*receiver UUID*/, String.class /*toggle type*/, String.class /*message*/, String.class, /*compmaterial*/ String.class /*compstyle*/
 	),
 
 	/**
@@ -138,7 +137,7 @@ public enum ProxyPacket {
 	/**
 	 * Indicates MySQL has changed for player and we need pulling it again
 	 */
-	DB_UPDATE(String.class /*player name*/, String.class /*player UUID*/, String.class /*data JSON*/, String.class, /*message to player*/ String.class /*TODO*/
+	DB_UPDATE(String.class /*origin server, used to ignore double-loading*/, String.class /*player name*/, String.class /*player UUID*/, String.class /*data JSON*/, String.class /*message to player*/
 	),
 
 	/**
@@ -150,7 +149,6 @@ public enum ProxyPacket {
 
 	/**
 	 * This will sync one mail to BungeeCord.
-	 * Sent after MAIL_SYNC_START.
 	 */
 	MAIL_SYNC(String.class /*mail as json*/
 	),
@@ -185,6 +183,11 @@ public enum ProxyPacket {
 		this.content = validValues;
 	}
 
+	/**
+	 * Gets an action by its name
+	 * @param name
+	 * @return
+	 */
 	public static ProxyPacket getByName(String name) {
 		ProxyPacket[] actions = values();
 
