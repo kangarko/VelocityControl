@@ -24,6 +24,7 @@ public final class OutgoingMessage extends Message {
 		setSenderUid(fromSenderUid.toString());
 		setServerName(fromServerName);
 		setAction(action);
+		this.queue.add(this.getChannelName()); //Unused channel name
 		this.queue.add(fromSenderUid);
 		this.queue.add(getServerName());
 		this.queue.add(getAction().name());
