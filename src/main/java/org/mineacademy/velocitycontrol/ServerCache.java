@@ -17,7 +17,7 @@ import java.util.UUID;
 public final class ServerCache {
 
     private final Gson GSON = new Gson();
-    private final Path JSON_PATH = Path.of(VelocityControl.getFolder() + "/users.json");
+    private final Path JSON_PATH = Path.of(VelocityControl.getFolder() + "\\users.json");
 
     @Getter private static final ServerCache instance = new ServerCache();
 

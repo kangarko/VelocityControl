@@ -14,7 +14,6 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.mineacademy.velocitycontrol.command.ReloadCommand;
-import org.mineacademy.velocitycontrol.foundation.model.JavaScriptExecutor;
 import org.mineacademy.velocitycontrol.listener.*;
 import org.mineacademy.velocitycontrol.operator.PlayerMessages;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -22,12 +21,11 @@ import org.slf4j.Logger;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.concurrent.TimeUnit;
 
 /**
 * The main VelocityControl Red plugin class.
 */
-@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.3-SNAPSHOT", authors = {"kangarko", "relavis", "james090500"})
+@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.4-SNAPSHOT", authors = {"kangarko", "relavis", "james090500"})
 public final class VelocityControl {
 	@Getter
 	private static VelocityControl instance;
@@ -91,11 +89,6 @@ public final class VelocityControl {
 		getServer().getConsoleCommandSource().sendMessage(
 				LegacyComponentSerializer.legacyAmpersand().deserialize("&a[VelocityControl] Loaded in " + time + "ms!")
 		);
-
-		//Clear cache
-		VelocityControl.getServer().getScheduler().buildTask(this, () -> {
-			JavaScriptExecutor.clearCache();
-		}).repeat(1, TimeUnit.SECONDS).schedule();
 	}
 
 	protected void onReloadablesStart() {

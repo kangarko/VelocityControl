@@ -12,7 +12,6 @@ import org.mineacademy.velocitycontrol.VelocityControl;
 import org.mineacademy.velocitycontrol.foundation.Common;
 import org.mineacademy.velocitycontrol.foundation.Debugger;
 import org.mineacademy.velocitycontrol.foundation.exception.EventHandledException;
-import org.mineacademy.velocitycontrol.foundation.model.JavaScriptExecutor;
 import org.mineacademy.velocitycontrol.foundation.model.Rule;
 import org.mineacademy.velocitycontrol.foundation.model.SimpleTime;
 import org.mineacademy.velocitycontrol.settings.Settings;
@@ -483,34 +482,6 @@ public abstract class PlayerMessage extends Operator implements Rule {
 				}
 			}
 
-			if (operator.getRequireSenderScript() != null) {
-				final Object result = JavaScriptExecutor.run(replaceVariables(operator.getRequireSenderScript(), operator));
-
-				if (result != null) {
-					Preconditions.checkArgument(result instanceof Boolean, "require sender script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
-
-					if ((boolean) result == false) {
-						Debugger.debug("operator", "\tno required sender script");
-
-						return false;
-					}
-				}
-			}
-
-			if (operator.getRequireReceiverScript() != null) {
-				final Object result = JavaScriptExecutor.run(replaceReceiverVariables(operator.getRequireReceiverScript(), operator));
-
-				if (result != null) {
-					Preconditions.checkArgument(result instanceof Boolean, "require receiver script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
-
-					if ((boolean) result == false) {
-						Debugger.debug("operator", "\tno required receiver script");
-
-						return false;
-					}
-				}
-			}
-
 			if (operator.getRequireSenderServer() != null && !this.sender.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getRequireSenderServer())) {
 				Debugger.debug("operator", "\tno require sender server");
 
@@ -538,34 +509,6 @@ public abstract class PlayerMessage extends Operator implements Rule {
 				Debugger.debug("operator", "\tignore receiver permission found");
 
 				return false;
-			}
-
-			if (operator.getIgnoreSenderScript() != null) {
-				final Object result = JavaScriptExecutor.run(replaceVariables(operator.getIgnoreSenderScript(), operator));
-
-				if (result != null) {
-					Preconditions.checkArgument(result instanceof Boolean, "ignore sendre script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
-
-					if ((boolean) result == true) {
-						Debugger.debug("operator", "\tignore sender script found");
-
-						return false;
-					}
-				}
-			}
-
-			if (operator.getIgnoreReceiverScript() != null) {
-				final Object result = JavaScriptExecutor.run(replaceReceiverVariables(operator.getIgnoreReceiverScript(), operator));
-
-				if (result != null) {
-					Preconditions.checkArgument(result instanceof Boolean, "ignore receiver script condition must return boolean not " + (result == null ? "null" : result.getClass()) + " for rule " + operator);
-
-					if ((boolean) result == true) {
-						Debugger.debug("operator", "\tignore receiver script found");
-
-						return false;
-					}
-				}
 			}
 
 			if (operator.getIgnoreSenderServer() != null && this.sender.getCurrentServer().get().getServerInfo().getName().equalsIgnoreCase(operator.getIgnoreSenderServer())) {
