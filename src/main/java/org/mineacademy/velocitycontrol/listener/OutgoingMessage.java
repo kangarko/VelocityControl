@@ -20,15 +20,17 @@ public final class OutgoingMessage extends Message {
 	}
 
 	public OutgoingMessage(UUID fromSenderUid, String fromServerName, ProxyPacket action) {
-		this.queue = new ArrayList();
+		this.queue = new ArrayList<>();
 		setSenderUid(fromSenderUid.toString());
 		setServerName(fromServerName);
 		setAction(action);
+		if (this.getChannelName() == null) {
+			this.setChannelName("Null");
+		}
 		this.queue.add(this.getChannelName()); //Unused channel name
 		this.queue.add(fromSenderUid);
 		this.queue.add(getServerName());
 		this.queue.add(getAction().name());
-
 	}
 
 	public void writeString(String... messages) {
@@ -60,34 +62,33 @@ public final class OutgoingMessage extends Message {
 
 	public byte[] compileData() {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		Iterator var2 = this.queue.iterator();
 
-		while(var2.hasNext()) {
-			Object object = var2.next();
+		for (Object object : this.queue) {
 			if (object instanceof String) {
-				out.writeUTF((String)object);
+				out.writeUTF((String) object);
 			} else if (object instanceof Boolean) {
-				out.writeBoolean((Boolean)object);
+				out.writeBoolean((Boolean) object);
 			} else if (object instanceof Byte) {
-				out.writeByte((Byte)object);
+				out.writeByte((Byte) object);
 			} else if (object instanceof Double) {
-				out.writeDouble((Double)object);
+				out.writeDouble((Double) object);
 			} else if (object instanceof Float) {
-				out.writeFloat((Float)object);
+				out.writeFloat((Float) object);
 			} else if (object instanceof Integer) {
-				out.writeInt((Integer)object);
+				out.writeInt((Integer) object);
 			} else if (object instanceof Long) {
-				out.writeLong((Long)object);
+				out.writeLong((Long) object);
 			} else if (object instanceof Short) {
-				out.writeShort((Short)object);
+				out.writeShort((Short) object);
 			} else if (object instanceof UUID) {
 				out.writeUTF(object.toString());
 			} else {
 				if (!(object instanceof byte[])) {
+
 					throw new VCException("Unsupported write of " + object.getClass().getSimpleName() + " to channel " + this.getChannel() + " with action " + this.getAction().toString());
 				}
 
-				out.write((byte[])object);
+				out.write((byte[]) object);
 			}
 		}
 
