@@ -25,7 +25,7 @@ import java.util.Collection;
 /**
 * The main VelocityControl Red plugin class.
 */
-@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.5-SNAPSHOT", authors = {"kangarko", "relavis", "james090500"})
+@Plugin(id = "velocitycontrol", name = "VelocityControl", version = "3.11.6-SNAPSHOT", authors = {"kangarko", "relavis", "james090500"})
 public final class VelocityControl {
 	@Getter
 	private static VelocityControl instance;
@@ -69,6 +69,11 @@ public final class VelocityControl {
 	}
 
 	public void onPluginStart() {
+		//Make plugin folder first
+		if(!VelocityControl.getFolder().toFile().exists()) {
+			VelocityControl.getFolder().toFile().mkdirs();
+		}
+
 		long time = System.currentTimeMillis();
 		ServerCache.getInstance();
 		Settings.load();

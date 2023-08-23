@@ -32,19 +32,23 @@ public final class ServerCache {
      */
     private ServerCache() {
         try {
-            //Make file if it doesn't exist
+            // Make file if it doesn't exist
             if(!JSON_PATH.toFile().exists()) {
-                Writer writer = new FileWriter(JSON_PATH.toFile());
-                GSON.toJson(registeredPlayers, writer);
-                writer.close();
+                JSON_PATH.toFile().createNewFile();
             }
 
-            //Load file to list
+            // Write data to the file
+            Writer writer = new FileWriter(JSON_PATH.toFile());
+            GSON.toJson(registeredPlayers, writer);
+            writer.close();
+
+            // Load file to list
             Reader reader = new FileReader(JSON_PATH.toFile());
-            this.registeredPlayers = new Gson().fromJson(reader, new TypeToken<HashSet<UUID>>(){}.getType());
+            this.registeredPlayers = GSON.fromJson(reader, new TypeToken<HashSet<UUID>>(){}.getType());
             reader.close();
         } catch (IOException e) {
             VelocityControl.getLogger().error("Error loading users.json");
+            this.registeredPlayers = new HashSet<>(); //Avoid a null pointer
             e.printStackTrace();
         }
     }

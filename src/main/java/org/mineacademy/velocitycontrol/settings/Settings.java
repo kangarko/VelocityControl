@@ -31,9 +31,6 @@ public final class Settings {
 	public static void load() {
 		try {
 			File file = new File(VelocityControl.getFolder().toFile(), "settings.yml");
-			if(!VelocityControl.getFolder().toFile().exists()) {
-				VelocityControl.getFolder().toFile().mkdirs();
-			}
 
 			if (!file.exists()) {
 				try (InputStream in = Settings.class.getResourceAsStream("/settings.yml")) {
