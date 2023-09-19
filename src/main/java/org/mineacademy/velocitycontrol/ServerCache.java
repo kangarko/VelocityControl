@@ -32,24 +32,18 @@ public final class ServerCache {
      */
     private ServerCache() {
         try {
-            // Make file if it doesn't exist
-            if(!JSON_PATH.toFile().exists()) {
-                JSON_PATH.toFile().createNewFile();
-            }
-
-            // Write data to the file
-            Writer writer = new FileWriter(JSON_PATH.toFile());
-            GSON.toJson(registeredPlayers, writer);
-            writer.close();
-
             // Load file to list
             Reader reader = new FileReader(JSON_PATH.toFile());
             this.registeredPlayers = GSON.fromJson(reader, new TypeToken<HashSet<UUID>>(){}.getType());
             reader.close();
         } catch (IOException e) {
-            VelocityControl.getLogger().error("Error loading users.json");
+            //We should only log an error if it exists but cannot be read
+            if(JSON_PATH.toFile().exists()) {
+                VelocityControl.getLogger().error("Error loading users.json");
+                e.printStackTrace();
+            }
+
             this.registeredPlayers = new HashSet<>(); //Avoid a null pointer
-            e.printStackTrace();
         }
     }
 
@@ -60,13 +54,6 @@ public final class ServerCache {
      */
     public void registerPlayer(final Player player) {
         this.registeredPlayers.add(player.getUniqueId());
-        try {
-            Writer writer = new FileWriter(JSON_PATH.toFile());
-            GSON.toJson(this.registeredPlayers, writer);
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -77,5 +64,18 @@ public final class ServerCache {
      */
     public boolean isPlayerRegistered(Player player) {
         return registeredPlayers.contains(player.getUniqueId());
+    }
+
+    /**
+     * Save the file when server is stopped
+     */
+    public void saveFile() {
+        try {
+            Writer writer = new FileWriter(JSON_PATH.toFile());
+            GSON.toJson(this.registeredPlayers, writer);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
