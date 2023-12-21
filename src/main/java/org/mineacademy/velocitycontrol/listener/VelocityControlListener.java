@@ -132,12 +132,7 @@ public final class VelocityControlListener {
         // Read the first three values of the packet, these are always the same
         this.senderUid = message.getSenderUid();
         this.serverName = Settings.getServerNameAlias(message.getServerName());
-
         final ProxyPacket packet = message.getAction();
-
-//        if (packet != ProxyPacket.PLAYERS_CLUSTER_DATA && packet != ProxyPacket.PLAYERS_CLUSTER_HEADER) {
-//            Debugger.debug("Incoming packet " + packet + " from " + serverName);
-//        }
 
         if (packet == ProxyPacket.PLAYERS_CLUSTER_DATA) {
             synchronized (this.clusteredData) {
@@ -166,6 +161,7 @@ public final class VelocityControlListener {
             final String syncedCacheLine = message.readString();
             final Optional<Player> player = VelocityControl.getServer().getPlayer(uniqueId);
 
+            VelocityControl.getLogger().error(uniqueId + " - Received ProxyPacket.CONFIRM_PLAYER_READY");
             if (player.isPresent()) {
                 SyncedCache.uploadSingle(player.get().getUsername(), uniqueId, syncedCacheLine);
                 SwitchListener.broadcastPendingMessage(player.get());
